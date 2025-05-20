@@ -77,17 +77,6 @@ export class ArtifactList {
                         background-color: var(--color-dark-600);
                     }
 
-                    /* 暗色模式下的表单元素样式 */
-                    .dark input[type="date"] {
-                        // position: relative;
-                        // padding-right: 30px; /* 为图标留出空间 */
-                    }
-
-                    .dark input[type="date"]::-webkit-calendar-picker-indicator {
-                        // display: none;
-                    }
-
-                    
 
                     .dark input[type="date"]:hover::after {
                         opacity: 1;
@@ -283,13 +272,34 @@ export class ArtifactList {
                             <span class="text-[11px] text-gray-500 dark:text-gray-400">${this.formatDate(artifact.created_at)}</span>
                         </div>
                         <div class="flex gap-0.5">
-                            <button class="rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer" 
-                                    onclick="parent.app.artifactList.viewDetails('${artifact.id}')">
-                                <i class="pi pi-eye text-xs"></i>
+                            <button class="rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300" 
+                                    onclick="parent.app.artifactList.viewDetails('${artifact.id}')"
+                                    title="查看详情">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
                             </button>
-                            <button class="rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer" 
-                                    onclick="parent.app.artifactList.downloadImage('${imageUrl}')">
-                                <i class="pi pi-download text-xs"></i>
+                            <button class="rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300" 
+                                    onclick="parent.app.artifactList.downloadImage('${imageUrl}')"
+                                    title="下载图片">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                            </button>
+                            <button class="rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-rose-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-rose-300 cursor-pointer group-hover:text-gray-300" 
+                                    onclick="parent.app.artifactList.deleteArtifact('${artifact.id}')"
+                                    title="删除记录">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                            <button class="rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-emerald-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-emerald-300 cursor-pointer group-hover:text-gray-300" 
+                                    onclick="parent.app.artifactList.loadWorkflow('${artifact.id}')"
+                                    title="加载工作流">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -415,6 +425,60 @@ export class ArtifactList {
         } catch (error) {
             console.error('下载图片失败:', error);
             app.ui.showToast('下载图片失败', 'error');
+        }
+    }
+
+    async deleteArtifact(id) {
+        if (!confirm('确定要删除这条记录吗？')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/bt/artifacts/${id}`, {
+                method: 'DELETE'
+            });
+            
+            if (!response.ok) throw new Error('删除失败');
+            
+            const result = await response.json();
+            if (result.code !== 0) {
+                throw new Error(result.msg || '删除失败');
+            }
+            
+            // 从界面上移除该元素
+            const card = this.frame.contentDocument.querySelector(`[data-id="${id}"]`);
+            if (card) {
+                card.remove();
+            }
+            
+            app.ui.showToast('删除成功', 'success');
+        } catch (error) {
+            console.error('删除记录失败:', error);
+            app.ui.showToast('删除记录失败', 'error');
+        }
+    }
+
+    async loadWorkflow(id) {
+        try {
+            const response = await fetch(`/bt/artifacts/${id}/workflow`);
+            if (!response.ok) throw new Error('加载工作流失败');
+            
+            const result = await response.json();
+            if (result.code !== 0) {
+                throw new Error(result.msg || '加载工作流失败');
+            }
+            
+            // 清除当前画布
+            app.graph.clear();
+            
+            // 加载工作流数据
+            const workflow = result.data;
+            app.loadGraphData(workflow);
+            
+            app.ui.showToast('工作流加载成功', 'success');
+        } catch (error) {
+            console.error('加载工作流失败:', error);
+            app.ui.showToast('加载工作流失败', 'error');
         }
     }
 } 
