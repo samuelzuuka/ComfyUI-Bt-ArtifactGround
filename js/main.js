@@ -1,6 +1,7 @@
 console.log("====top====bt-artifact-ground====top====");
 import { app } from "../../scripts/app.js";
 import { ComfyDialog,$el } from "../../scripts/ui.js";
+import { ArtifactList } from "./artifact-list.js";
 
 import {
 	manager_instance, rebootAPI, install_via_git_url,
@@ -158,7 +159,19 @@ app.registerExtension({
             app.ui.showMessage(`新的生成记录已保存: ${event.detail.data.timestamp}`, "success");
         });
     }
-}); 
+});
+
+app.extensionManager.registerSidebarTab({
+    id: "btArtifactGroupdSidebar",
+    icon: "pi pi-compass",
+    title: "构建记录",
+    tooltip: "永久保存的生成历史记录",
+    type: "custom",
+    render: (el) => {
+        // 初始化历史记录列表
+        app.artifactList = new ArtifactList(el);
+    }
+});
 
 // app.registerExtension({
 //     name: 'TestExtension',
@@ -190,164 +203,3 @@ app.registerExtension({
 //     ]
 // })
 
-app.extensionManager.registerSidebarTab({
-  id: "btArtifactGroupdSidebar",
-  icon: "pi pi-compass",
-  title: "构建记录",
-  tooltip: "永久保存的生成历史记录",
-  type: "custom",
-  render: (el) => {
-    // 添加 Tailwind CSS
-    const link = document.createElement('link');
-    link.href = 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css';
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
-
-    // 构建界面 HTML
-    el.innerHTML = `
-      <div class="flex flex-col h-full bg-gray-900 text-gray-100">
-        <!-- 搜索和过滤区域 -->
-        <div class="p-4 border-b border-gray-700">
-          <div class="flex space-x-4 mb-4">
-            <!-- 日期选择 -->
-            <div class="flex-1">
-              <input type="date" class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-            <!-- 状态过滤 -->
-            <select class="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">全部状态</option>
-              <option value="1">已完成</option>
-              <option value="0">处理中</option>
-              <option value="2">失败</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- 图片列表区域 -->
-        <div class="flex-1 overflow-y-auto" id="artifactList">
-          <!-- 图片项模板 -->
-          <div class="relative p-4 border-b border-gray-700 hover:bg-gray-800">
-            <div class="aspect-w-16 aspect-h-9 mb-2">
-              <img src="" class="object-cover rounded-lg" alt="生成图片" />
-            </div>
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-2">
-                <span class="px-2 py-1 text-xs rounded-full bg-green-600">已完成</span>
-                <span class="text-sm text-gray-400">2024-03-12 15:30</span>
-              </div>
-              <button class="p-2 hover:bg-gray-700 rounded-full">
-                <i class="pi pi-download"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-
-    // 初始化功能
-    initArtifactList(el);
-  }
-});
-
-// 初始化历史记录列表
-function initArtifactList(el) {
-  const dateInput = el.querySelector('input[type="date"]');
-  const statusSelect = el.querySelector('select');
-  const artifactList = el.querySelector('#artifactList');
-
-  // 加载历史记录数据
-  async function loadArtifacts(date = '', status = '') {
-    try {
-      const response = await fetch('/bt/artifacts/list?' + new URLSearchParams({
-        date: date,
-        status: status,
-        limit: 20,
-        offset: 0
-      }));
-      
-      if (!response.ok) throw new Error('加载失败');
-      
-      const data = await response.json();
-      renderArtifacts(data);
-    } catch (error) {
-      console.error('加载历史记录失败:', error);
-    }
-  }
-
-  // 渲染历史记录列表
-  function renderArtifacts(artifacts) {
-    artifactList.innerHTML = artifacts.map(artifact => `
-      <div class="relative p-4 border-b border-gray-700 hover:bg-gray-800" data-id="${artifact.id}">
-        <div class="aspect-w-16 aspect-h-9 mb-2">
-          <img src="${getImageUrl(artifact)}" class="object-cover rounded-lg" alt="生成图片" />
-        </div>
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-2">
-            <span class="px-2 py-1 text-xs rounded-full ${getStatusClass(artifact.result_status)}">
-              ${getStatusText(artifact.result_status)}
-            </span>
-            <span class="text-sm text-gray-400">${formatDate(artifact.created_at)}</span>
-          </div>
-          <button class="p-2 hover:bg-gray-700 rounded-full" onclick="downloadImage('${artifact.id}')">
-            <i class="pi pi-download"></i>
-          </button>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  // 获取状态样式
-  function getStatusClass(status) {
-    switch(status) {
-      case '1': return 'bg-green-600';
-      case '0': return 'bg-yellow-600';
-      case '2': return 'bg-red-600';
-      default: return 'bg-gray-600';
-    }
-  }
-
-  // 获取状态文本
-  function getStatusText(status) {
-    switch(status) {
-      case '1': return '已完成';
-      case '0': return '处理中';
-      case '2': return '失败';
-      default: return '未知';
-    }
-  }
-
-  // 格式化日期
-  function formatDate(dateStr) {
-    return new Date(dateStr).toLocaleString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-
-  // 获取图片URL
-  function getImageUrl(artifact) {
-    const outputs = JSON.parse(artifact.outputs || '{}');
-    for (const nodeId in outputs) {
-      const output = outputs[nodeId];
-      if (output.images && output.images.length > 0) {
-        return `/view?filename=${output.images[0].filename}`;
-      }
-    }
-    return '';
-  }
-
-  // 事件监听
-  dateInput.addEventListener('change', () => {
-    loadArtifacts(dateInput.value, statusSelect.value);
-  });
-
-  statusSelect.addEventListener('change', () => {
-    loadArtifacts(dateInput.value, statusSelect.value);
-  });
-
-  // 初始加载
-  loadArtifacts();
-}

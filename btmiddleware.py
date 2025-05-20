@@ -6,6 +6,7 @@ import json
 import asyncio
 from datetime import datetime
 from .database.manager import db_manager
+from .api import routes
 
 prompt_server = server.PromptServer.instance
 app = prompt_server.app
@@ -96,9 +97,7 @@ async def handle_pre_request(request: web.Request):
         if request.path == '/api/prompt' and request.method == 'POST':
             data = await request.json()
             logging.info(f"请求参数: {json.dumps(data, ensure_ascii=False)}")
-            # prompt_id = data.get('prompt_id')
-            # if prompt_id:
-            #     query_prompt_history_byid(prompt_id)
+
     except Exception as e:
         logging.error(f"请求前处理异常: {str(e)}")
 
@@ -153,6 +152,9 @@ async def record_queue_req(request: web.Request, handler):
         raise
 
 app.middlewares.append(record_queue_req)
+
+# 注册API路由
+app.add_routes(routes)
 
 async def handle_artifacts_list(request: web.Request):
     """处理历史记录列表请求"""

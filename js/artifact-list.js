@@ -1,4 +1,4 @@
-import { app } from "../../../scripts/app.js";
+import { app } from "../../scripts/app.js";
 
 export class ArtifactList {
     constructor(container) {
@@ -18,17 +18,17 @@ export class ArtifactList {
 
         // 构建界面 HTML
         this.container.innerHTML = `
-            <div class="flex flex-col h-full bg-gray-900 text-gray-100">
+            <div class="flex flex-col h-full bg-gray-900 text-gray-100 text-xs">
                 <!-- 搜索和过滤区域 -->
-                <div class="p-4 border-b border-gray-700">
-                    <div class="flex space-x-4 mb-4">
+                <div class="p-2 border-b border-gray-700">
+                    <div class="flex space-x-2">
                         <!-- 日期选择 -->
                         <div class="flex-1">
-                            <input type="date" class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            <input type="date" class="w-full px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500" />
                         </div>
                         <!-- 状态过滤 -->
-                        <select class="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">全部状态</option>
+                        <select class="px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <option value="">全部</option>
                             <option value="1">已完成</option>
                             <option value="0">处理中</option>
                             <option value="2">失败</option>
@@ -38,7 +38,7 @@ export class ArtifactList {
 
                 <!-- 图片列表区域 -->
                 <div class="flex-1 overflow-y-auto" id="artifactList">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+                    <div class="grid grid-cols-1 gap-2 p-2">
                         <!-- 图片项将在这里动态生成 -->
                     </div>
                 </div>
@@ -80,17 +80,27 @@ export class ArtifactList {
 
     async loadArtifacts(date = '', status = '') {
         try {
-            const response = await fetch('/bt/artifacts/list?' + new URLSearchParams({
-                date,
-                status,
-                limit: 20,
-                offset: 0
-            }));
+            const response = await fetch('/bt/artifacts/list', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    date,
+                    status,
+                    limit: 20,
+                    offset: 0
+                })
+            });
             
             if (!response.ok) throw new Error('加载失败');
             
-            const data = await response.json();
-            this.renderArtifacts(data, true);
+            const result = await response.json();
+            if (result.code !== 0) {
+                throw new Error(result.msg || '加载失败');
+            }
+            
+            this.renderArtifacts(result.data, true);
         } catch (error) {
             console.error('加载历史记录失败:', error);
             app.ui.showToast('加载历史记录失败', 'error');
@@ -99,21 +109,32 @@ export class ArtifactList {
 
     async loadMoreArtifacts(offset) {
         try {
-            const response = await fetch('/bt/artifacts/list?' + new URLSearchParams({
-                date: this.dateInput.value,
-                status: this.statusSelect.value,
-                limit: 20,
-                offset
-            }));
+            const response = await fetch('/bt/artifacts/list', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    date: this.dateInput.value,
+                    status: this.statusSelect.value,
+                    limit: 20,
+                    offset
+                })
+            });
             
             if (!response.ok) throw new Error('加载失败');
             
-            const data = await response.json();
-            if (data.length > 0) {
-                this.renderArtifacts(data, false);
+            const result = await response.json();
+            if (result.code !== 0) {
+                throw new Error(result.msg || '加载失败');
+            }
+            
+            if (result.data.length > 0) {
+                this.renderArtifacts(result.data, false);
             }
         } catch (error) {
             console.error('加载更多记录失败:', error);
+            app.ui.showToast('加载更多记录失败', 'error');
         }
     }
 
@@ -129,25 +150,25 @@ export class ArtifactList {
     createArtifactCard(artifact) {
         const imageUrl = this.getImageUrl(artifact);
         return `
-            <div class="relative bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors" data-id="${artifact.id}">
+            <div class="relative bg-gray-800 rounded overflow-hidden hover:bg-gray-700 transition-colors" data-id="${artifact.id}">
                 <div class="aspect-w-16 aspect-h-9">
-                    <img src="${imageUrl}" class="object-cover w-full h-full rounded-t-lg" alt="生成图片" 
+                    <img src="${imageUrl}" class="object-cover w-full h-full" alt="生成图片" 
                          onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22><rect width=%221%22 height=%221%22 fill=%22%23333%22/></svg>'" />
                 </div>
-                <div class="p-4">
+                <div class="p-2">
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-2">
-                            <span class="px-2 py-1 text-xs rounded-full ${this.getStatusClass(artifact.result_status)}">
+                        <div class="flex items-center space-x-1">
+                            <span class="px-1.5 py-0.5 text-xs rounded-full ${this.getStatusClass(artifact.result_status)}">
                                 ${this.getStatusText(artifact.result_status)}
                             </span>
-                            <span class="text-sm text-gray-400">${this.formatDate(artifact.created_at)}</span>
+                            <span class="text-xs text-gray-400">${this.formatDate(artifact.created_at)}</span>
                         </div>
-                        <div class="flex space-x-2">
-                            <button class="p-2 hover:bg-gray-600 rounded-full" onclick="app.artifactList.viewDetails('${artifact.id}')">
-                                <i class="pi pi-eye"></i>
+                        <div class="flex space-x-1">
+                            <button class="p-1 hover:bg-gray-600 rounded" onclick="app.artifactList.viewDetails('${artifact.id}')">
+                                <i class="pi pi-eye text-xs"></i>
                             </button>
-                            <button class="p-2 hover:bg-gray-600 rounded-full" onclick="app.artifactList.downloadImage('${imageUrl}')">
-                                <i class="pi pi-download"></i>
+                            <button class="p-1 hover:bg-gray-600 rounded" onclick="app.artifactList.downloadImage('${imageUrl}')">
+                                <i class="pi pi-download text-xs"></i>
                             </button>
                         </div>
                     </div>
@@ -200,9 +221,13 @@ export class ArtifactList {
             const response = await fetch(`/bt/artifacts/${id}`);
             if (!response.ok) throw new Error('获取详情失败');
             
-            const artifact = await response.json();
+            const result = await response.json();
+            if (result.code !== 0) {
+                throw new Error(result.msg || '获取详情失败');
+            }
+            
             app.ui.dialog.show(`生成详情 #${id}`, {
-                element: this.createDetailsView(artifact),
+                element: this.createDetailsView(result.data),
                 class: "artifact-details-dialog"
             });
         } catch (error) {
@@ -213,22 +238,22 @@ export class ArtifactList {
 
     createDetailsView(artifact) {
         const container = document.createElement('div');
-        container.className = 'p-4 bg-gray-900 text-gray-100';
+        container.className = 'p-3 bg-gray-900 text-gray-100 text-xs';
         container.innerHTML = `
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 gap-3">
                 <div class="aspect-w-16 aspect-h-9">
-                    <img src="${this.getImageUrl(artifact)}" class="object-contain rounded-lg" alt="生成图片" />
+                    <img src="${this.getImageUrl(artifact)}" class="object-contain rounded" alt="生成图片" />
                 </div>
-                <div class="space-y-4">
+                <div class="space-y-3">
                     <div>
-                        <h3 class="text-lg font-semibold mb-2">提示词</h3>
-                        <pre class="bg-gray-800 p-3 rounded-lg overflow-auto max-h-40">${JSON.stringify(artifact.prompt, null, 2)}</pre>
+                        <h3 class="text-sm font-semibold mb-1">提示词</h3>
+                        <pre class="bg-gray-800 p-2 rounded overflow-auto max-h-32 text-xs">${JSON.stringify(artifact.prompt, null, 2)}</pre>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold mb-2">元数据</h3>
-                        <pre class="bg-gray-800 p-3 rounded-lg overflow-auto max-h-40">${JSON.stringify(artifact.meta, null, 2)}</pre>
+                        <h3 class="text-sm font-semibold mb-1">元数据</h3>
+                        <pre class="bg-gray-800 p-2 rounded overflow-auto max-h-32 text-xs">${JSON.stringify(artifact.meta, null, 2)}</pre>
                     </div>
-                    <div class="text-sm text-gray-400">
+                    <div class="text-xs text-gray-400">
                         创建时间: ${this.formatDate(artifact.created_at)}
                     </div>
                 </div>
