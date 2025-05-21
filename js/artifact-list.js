@@ -98,7 +98,7 @@ export class ArtifactList {
             <body class="dark bg-black text-gray-100 h-full">
                 <div class="flex flex-col h-full min-h-0 bg-black p-2">
                     <!-- 搜索和过滤区域 -->
-                    <div class="border-b border-gray-800 pb-1.5 flex-none">
+                    <div class="border-gray-800 pb-1.5 flex-none shadow-[0_4px_6px_-1px_rgba(0,0,0,0.3)]">
                         <div class="flex items-center gap-1.5">
                             <input type="date" 
                                 class="h-7 rounded bg-gray-900 px-1.5 text-xs text-gray-100 border-0 focus:ring-1 focus:ring-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:ring-gray-700" />
@@ -110,7 +110,7 @@ export class ArtifactList {
                                 <option value="2">失败</option>
                             </select>
                             <span class="text-gray-600 dark:text-gray-500 text-xs">|</span>
-                            <button class="search-btn h-7 w-7 rounded bg-gray-900 hover:bg-gray-800 transition-colors cursor-pointer flex items-center justify-center text-gray-400 hover:text-gray-300">
+                            <button class="search-btn h-7 w-7 rounded bg-gray-900 hover:bg-gray-800 active:bg-gray-700 cursor-pointer flex items-center justify-center text-gray-400 hover:text-gray-300">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="11" cy="11" r="7"></circle>
                                     <path d="M21 21l-4.35-4.35"></path>
@@ -120,7 +120,7 @@ export class ArtifactList {
                     </div>
 
                     <!-- 图片列表区域 -->
-                    <div class="flex-1 min-h-0 overflow-y-auto pt-1.5 custom-scrollbar" id="artifactList">
+                    <div class="flex-1 min-h-0 overflow-y-auto pt-1.5 mt-1 custom-scrollbar" id="artifactList">
                         <div class="grid grid-cols-1 gap-2">
                             <!-- 图片项将在这里动态生成 -->
                         </div>
@@ -277,26 +277,26 @@ export class ArtifactList {
                             <span class="text-[11px] text-gray-500 dark:text-gray-400">${this.formatDate(artifact.created_at)}</span>
                         </div>
                         <div class="flex gap-0.5">
-                            <button class="view-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300" 
+                            <button class="view-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 active:bg-gray-700 active:scale-95 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300 transition-all" 
                                     title="查看详情">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
                             </button>
-                            <button class="download-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300" 
+                            <button class="download-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 active:bg-gray-700 active:scale-95 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300 transition-all" 
                                     title="下载图片">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                 </svg>
                             </button>
-                            <button class="delete-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-rose-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-rose-300 cursor-pointer group-hover:text-gray-300" 
+                            <button class="delete-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-rose-300 active:bg-gray-700 active:scale-95 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-rose-300 cursor-pointer group-hover:text-gray-300 transition-all" 
                                     title="删除记录">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
                             </button>
-                            <button class="load-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-emerald-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-emerald-300 cursor-pointer group-hover:text-gray-300" 
+                            <button class="load-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-emerald-300 active:bg-gray-700 active:scale-95 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-emerald-300 cursor-pointer group-hover:text-gray-300 transition-all" 
                                     title="加载工作流">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
