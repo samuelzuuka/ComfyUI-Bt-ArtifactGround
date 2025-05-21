@@ -150,7 +150,7 @@ export class ArtifactList {
                     <!-- 分页区域 -->
                     <div class="flex-none mt-2 py-2 flex items-center justify-between border-t border-gray-800">
                         <div class="text-sm text-gray-500">
-                            共 <span id="totalCount">0</span> 条
+                            共 <span id="totalCount">0</span> 条 / <span id="totalPages">0</span> 页
                         </div>
                         <div class="flex items-center gap-1">
                             <button id="prevPage" class="pagination-btn bg-gray-900 text-gray-400 hover:bg-gray-800 hover:text-gray-300 active:bg-gray-700 disabled:hover:bg-gray-900 disabled:hover:text-gray-400" disabled>
@@ -178,6 +178,7 @@ export class ArtifactList {
         this.statusSelect = doc.querySelector('select');
         this.artifactList = doc.querySelector('#artifactList > div');
         this.totalCountEl = doc.querySelector('#totalCount');
+        this.totalPagesEl = doc.querySelector('#totalPages');
         this.currentPageEl = doc.querySelector('#currentPage');
         this.prevPageBtn = doc.querySelector('#prevPage');
         this.nextPageBtn = doc.querySelector('#nextPage');
@@ -543,17 +544,21 @@ export class ArtifactList {
     }
 
     renderPagination() {
+        const totalPages = Math.ceil(this.total / this.pageSize);
+        
         if (this.totalCountEl) {
-            this.totalCountEl.textContent = ` ${this.total} `;
+            this.totalCountEl.textContent = `${this.total}`;
+        }
+        if (this.totalPagesEl) {
+            this.totalPagesEl.textContent = `${totalPages}`;
         }
         if (this.currentPageEl) {
-            this.currentPageEl.textContent = ` ${this.currentPage} `;
+            this.currentPageEl.textContent = `${this.currentPage}`;
         }
         if (this.prevPageBtn) {
             this.prevPageBtn.disabled = this.currentPage <= 1;
         }
         if (this.nextPageBtn) {
-            const totalPages = Math.ceil(this.total / this.pageSize);
             this.nextPageBtn.disabled = this.currentPage >= totalPages;
         }
     }
