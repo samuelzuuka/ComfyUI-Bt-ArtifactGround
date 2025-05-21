@@ -4,6 +4,13 @@
 
 ComfyUI 构建物广场，永久存储 ComfyUI 的生成记录，防止重启或超数量后 Queue 被清空导致无法找回历史生成。
 
+## 解决核心问题
+ComfyUI队列重启或超过阈值数量后自动清空，历史生成记录无法查找的问题
+
+## 使用截图
+
+![主界面](doc/usage.png)
+
 ## 功能特点
 
 - 自动保存生成的图片和相关参数
@@ -27,8 +34,9 @@ cd custom_nodes
 git clone https://github.com/samuelzuuka/ComfyUI-Bt-ArtifactGround.git
 ```
 
-3. 安装依赖
+3. 安装依赖(可省略)..重启会自动安装
 ```bash
+cd ComfyUI-Bt-ArtifactGround
 pip install -r requirements.txt
 ```
 
