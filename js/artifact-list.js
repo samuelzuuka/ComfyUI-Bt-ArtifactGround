@@ -598,7 +598,11 @@ export class ArtifactList {
     }
 
     getAllImageUrls(artifact) {
-        const outputs = artifact.outputs || {};
+        if (!artifact || !artifact.outputs) {
+            return [];
+        }
+        
+        const outputs = artifact.outputs;
         const urls = [];
         
         // 首先添加输出图片
@@ -608,10 +612,20 @@ export class ArtifactList {
                 output.images
                     .filter(image => image.type === 'output')
                     .forEach(image => {
-                    const url = `/api/view?filename=${image.filename}&type=${image.type}`;
-                    urls.push({url:url,filename:image.filename});
-                });
+                        if (image && image.filename) {
+                            const url = `/api/view?filename=${image.filename}&type=${image.type}`;
+                            urls.push({url: url, filename: image.filename});
+                        }
+                    });
             }
+        }
+        
+        // 如果没有找到任何图片，返回一个默认的空图片
+        if (urls.length === 0) {
+            return [{
+                url: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22><rect width=%221%22 height=%221%22 fill=%22%23262626%22/></svg>',
+                filename: 'empty.png'
+            }];
         }
         
         return urls;
