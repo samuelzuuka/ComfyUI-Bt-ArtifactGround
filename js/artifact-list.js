@@ -1,4 +1,5 @@
 import { app } from "../../scripts/app.js";
+import { ImagePreview } from "./image-preview.js";
 
 export class ArtifactList {
     constructor(container) {
@@ -11,197 +12,15 @@ export class ArtifactList {
         this.currentPage = 1;
         this.total = 0;
 
-        // 创建预览组件
-        this.createPreviewOverlay();
+        // 初始化图片预览组件
+        this.imagePreview = new ImagePreview();
         this.init();
     }
 
-    createPreviewOverlay() {
-        // 检查是否已存在预览组件
-        const existingOverlay = document.querySelector('#bt-image-preview-overlay');
-        if (existingOverlay) {
-            this.previewOverlay = existingOverlay;
-            return;
-        }
-
-        // 创建样式
-        const style = document.createElement('style');
-        style.textContent = `
-            #bt-image-preview-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                background: rgba(0, 0, 0, 0.9);
-                z-index: 10000;
-                display: none;
-                align-items: center;
-                justify-content: center;
-                cursor: zoom-out;
-            }
-
-            #bt-image-preview-overlay.active {
-                display: flex;
-            }
-
-            .bt-image-preview-container {
-                position: relative;
-                max-width: 90vw;
-                max-height: 90vh;
-            }
-
-            .bt-image-preview-container img {
-                max-width: 100%;
-                max-height: 90vh;
-                object-fit: contain;
-            }
-
-            .bt-image-preview-close {
-                position: absolute;
-                top: -40px;
-                right: 0;
-                color: white;
-                cursor: pointer;
-                padding: 8px;
-                font-size: 28px;
-                background: rgba(0, 0, 0, 0.5);
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .bt-image-preview-nav {
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                color: white;
-                cursor: pointer;
-                font-size: 28px;
-                background: rgba(0, 0, 0, 0.5);
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .bt-image-preview-prev {
-                left: -60px;
-            }
-
-            .bt-image-preview-next {
-                right: -60px;
-            }
-
-            .bt-image-preview-counter {
-                position: absolute;
-                bottom: -30px;
-                left: 50%;
-                transform: translateX(-50%);
-                color: white;
-                font-size: 14px;
-            }
-        `;
-        document.head.appendChild(style);
-
-        // 创建预览组件
-        const overlay = document.createElement('div');
-        overlay.id = 'bt-image-preview-overlay';
-        overlay.innerHTML = `
-            <div class="bt-image-preview-container">
-                <div class="bt-image-preview-close">&times;</div>
-                <img src="" alt="预览图片" />
-                <div class="bt-image-preview-nav bt-image-preview-prev">&lt;</div>
-                <div class="bt-image-preview-nav bt-image-preview-next">&gt;</div>
-                <div class="bt-image-preview-counter"></div>
-            </div>
-        `;
-        document.body.appendChild(overlay);
-        this.previewOverlay = overlay;
-    }
 
     showImagePreview(artifact) {
-        const overlay = this.previewOverlay;
-        const previewImg = overlay.querySelector('img');
-        const closeBtn = overlay.querySelector('.bt-image-preview-close');
-        const prevBtn = overlay.querySelector('.bt-image-preview-prev');
-        const nextBtn = overlay.querySelector('.bt-image-preview-next');
-        const counter = overlay.querySelector('.bt-image-preview-counter');
-
-        // 获取当前图片的所有URL
         const imageUrls = this.getAllImageUrls(artifact);
-        let currentIndex = 0;
-
-        const updatePreviewImage = () => {
-            previewImg.src = imageUrls[currentIndex];
-            // 更新导航按钮状态
-            prevBtn.style.display = currentIndex > 0 ? 'flex' : 'none';
-            nextBtn.style.display = currentIndex < imageUrls.length - 1 ? 'flex' : 'none';
-            // 更新计数器
-            counter.textContent = `${currentIndex + 1} / ${imageUrls.length}`;
-        };
-
-        // 初始化预览图片
-        updatePreviewImage();
-
-        // 显示预览
-        overlay.classList.add('active');
-
-        // 绑定关闭事件
-        const closePreview = () => {
-            overlay.classList.remove('active');
-        };
-
-        closeBtn.onclick = closePreview;
-        overlay.onclick = (e) => {
-            if (e.target === overlay) {
-                closePreview();
-            }
-        };
-
-        // 绑定键盘事件
-        const handleKeydown = (e) => {
-            if (e.key === 'Escape') {
-                closePreview();
-            } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
-                currentIndex--;
-                updatePreviewImage();
-            } else if (e.key === 'ArrowRight' && currentIndex < imageUrls.length - 1) {
-                currentIndex++;
-                updatePreviewImage();
-            }
-        };
-
-        document.addEventListener('keydown', handleKeydown);
-
-        // 绑定导航按钮事件
-        prevBtn.onclick = (e) => {
-            e.stopPropagation();
-            if (currentIndex > 0) {
-                currentIndex--;
-                updatePreviewImage();
-            }
-        };
-
-        nextBtn.onclick = (e) => {
-            e.stopPropagation();
-            if (currentIndex < imageUrls.length - 1) {
-                currentIndex++;
-                updatePreviewImage();
-            }
-        };
-
-        // 清理事件监听
-        overlay.addEventListener('transitionend', () => {
-            if (!overlay.classList.contains('active')) {
-                document.removeEventListener('keydown', handleKeydown);
-            }
-        });
+        this.imagePreview.showPreview(imageUrls);
     }
 
     init() {
@@ -246,6 +65,7 @@ export class ArtifactList {
                         display: flex;
                         flex-direction: column;
                     }
+                    
 
                     /* 暗色模式下的滚动条样式 */
                     .dark .custom-scrollbar {
@@ -304,6 +124,15 @@ export class ArtifactList {
                     .pagination-btn:disabled {
                         opacity: 0.5;
                         cursor: not-allowed;
+                    }
+
+                    .artifact-item .bt-prev-image-btn{
+                        top: calc(50% - var(--spacing) * 4);
+                        left: calc(var(--spacing) * 2);
+                    }
+                    .artifact-item .bt-next-image-btn {
+                        top: calc(50% - var(--spacing) * 4);
+                        right: calc(var(--spacing) * 2);
                     }
                 </style>
             </head>
@@ -481,9 +310,11 @@ export class ArtifactList {
     }
 
     createArtifactCard(artifact) {
-        const imageUrl = this.getImageUrl(artifact);
+        const imageUrls = this.getAllImageUrls(artifact);
+        const imageCount = imageUrls.length;
+        const imageUrl = imageUrls[0] || '';
         const card = document.createElement('div');
-        card.className = 'group rounded-lg bg-gray-900 p-1.5 hover:bg-gray-800 transition-colors duration-200 dark:bg-gray-900 dark:hover:bg-gray-800';
+        card.className = 'artifact-item group rounded-lg bg-gray-900 p-1.5 hover:bg-gray-800 transition-colors duration-200 dark:bg-gray-900 dark:hover:bg-gray-800';
         card.setAttribute('data-id', artifact.id);
         
         card.innerHTML = `
@@ -491,10 +322,21 @@ export class ArtifactList {
                     <img src="${imageUrl}" 
                          class="h-full w-full object-cover cursor-zoom-in bt-artifact-preview-trigger" 
                          alt="生成图片" 
+                         data-current-index="0"
                          onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22><rect width=%221%22 height=%221%22 fill=%22%23262626%22/></svg>'" />
-                    ${this.getImageCount(artifact) > 1 ? `
                     <div class="absolute bottom-2 right-2 bg-black rounded-md w-8 h-8 flex items-center justify-center">
                         <span class="text-[15px] font-medium text-blue-400">${this.getImageCount(artifact)}</span>
+                    </div>
+                    ${imageCount > 1 ? `
+                    <div class="absolute top-2 left-2 bg-black rounded-md w-8 h-8 flex items-center justify-center bt-prev-image-btn">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </div>
+                    <div class="absolute top-2 right-2 bg-black rounded-md w-8 h-8 flex items-center justify-center bt-next-image-btn">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
                     </div>
                     ` : ''}
                 </div>
@@ -543,6 +385,31 @@ export class ArtifactList {
             e.stopPropagation();
             this.showImagePreview(artifact);
         });
+
+        // 如果有多张图片，绑定切换事件
+        if (imageCount > 1) {
+            const img = card.querySelector('img');
+            const prevBtn = card.querySelector('.bt-prev-image-btn');
+            const nextBtn = card.querySelector('.bt-next-image-btn');
+            
+            prevBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const currentIndex = parseInt(img.dataset.currentIndex);
+                if (currentIndex > 0) {
+                    img.dataset.currentIndex = currentIndex - 1;
+                    img.src = imageUrls[currentIndex - 1];
+                }
+            });
+            
+            nextBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const currentIndex = parseInt(img.dataset.currentIndex);
+                if (currentIndex < imageUrls.length - 1) {
+                    img.dataset.currentIndex = currentIndex + 1;
+                    img.src = imageUrls[currentIndex + 1];
+                }
+            });
+        }
 
         // 绑定事件监听
         // const viewBtn = card.querySelector('.view-btn');
@@ -623,35 +490,6 @@ export class ArtifactList {
             return imageMap['temp'][0];
         }
         return '';
-    }
-
-    createDetailsView(artifact) {
-        const container = document.createElement('div');
-        container.className = 'bg-black p-4 max-w-2xl mx-auto dark:bg-black';
-        
-        container.innerHTML = `
-            <div class="space-y-4">
-                <div class="aspect-video overflow-hidden rounded bg-gray-900 dark:bg-gray-900">
-                    <img src="${this.getImageUrl(artifact)}" 
-                         class="h-full w-full object-contain" 
-                         alt="生成图片" />
-                </div>
-                <div class="space-y-3">
-                    <div>
-                        <h3 class="mb-1.5 text-xs font-medium text-gray-200 dark:text-gray-200">提示词</h3>
-                        <pre class="rounded bg-gray-900 p-2 text-[11px] font-mono text-gray-400 overflow-auto max-h-32 custom-scrollbar dark:bg-gray-900 dark:text-gray-400">${JSON.stringify(artifact.prompt, null, 2)}</pre>
-                    </div>
-                    <div>
-                        <h3 class="mb-1.5 text-xs font-medium text-gray-200 dark:text-gray-200">元数据</h3>
-                        <pre class="rounded bg-gray-900 p-2 text-[11px] font-mono text-gray-400 overflow-auto max-h-32 custom-scrollbar dark:bg-gray-900 dark:text-gray-400">${JSON.stringify(artifact.meta, null, 2)}</pre>
-                    </div>
-                    <div class="text-[11px] text-gray-500 dark:text-gray-500">
-                        创建时间: ${this.formatDate(artifact.created_at)}
-                    </div>
-                </div>
-            </div>
-        `;
-        return container;
     }
 
     async downloadImage(url) {
