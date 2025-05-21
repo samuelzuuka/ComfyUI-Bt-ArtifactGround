@@ -4,4 +4,4 @@ __pycache__
 *.pyd
 *.pyw
 *.pyz
-data
+data/*.db
