@@ -245,18 +245,23 @@ export class ArtifactList {
     }
 
     renderArtifacts(artifacts, clear = true) {
-        const html = artifacts.map(artifact => this.createArtifactCard(artifact)).join('');
         if (clear) {
-            this.artifactList.innerHTML = html;
-        } else {
-            this.artifactList.insertAdjacentHTML('beforeend', html);
+            this.artifactList.innerHTML = '';
         }
+        
+        artifacts.forEach(artifact => {
+            const card = this.createArtifactCard(artifact);
+            this.artifactList.appendChild(card);
+        });
     }
 
     createArtifactCard(artifact) {
         const imageUrl = this.getImageUrl(artifact);
-        return `
-            <div class="group rounded-lg bg-gray-900 p-1.5 hover:bg-gray-800 transition-colors duration-200 dark:bg-gray-900 dark:hover:bg-gray-800" data-id="${artifact.id}">
+        const card = document.createElement('div');
+        card.className = 'group rounded-lg bg-gray-900 p-1.5 hover:bg-gray-800 transition-colors duration-200 dark:bg-gray-900 dark:hover:bg-gray-800';
+        card.setAttribute('data-id', artifact.id);
+        
+        card.innerHTML = `
                 <div class="relative aspect-[4/3] overflow-hidden rounded">
                     <img src="${imageUrl}" 
                          class="h-full w-full object-cover" 
@@ -272,30 +277,26 @@ export class ArtifactList {
                             <span class="text-[11px] text-gray-500 dark:text-gray-400">${this.formatDate(artifact.created_at)}</span>
                         </div>
                         <div class="flex gap-0.5">
-                            <button class="rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300" 
-                                    onclick="parent.app.artifactList.viewDetails('${artifact.id}')"
+                            <button class="view-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300" 
                                     title="查看详情">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
                             </button>
-                            <button class="rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300" 
-                                    onclick="parent.app.artifactList.downloadImage('${imageUrl}')"
+                            <button class="download-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300" 
                                     title="下载图片">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                 </svg>
                             </button>
-                            <button class="rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-rose-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-rose-300 cursor-pointer group-hover:text-gray-300" 
-                                    onclick="parent.app.artifactList.deleteArtifact('${artifact.id}')"
+                            <button class="delete-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-rose-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-rose-300 cursor-pointer group-hover:text-gray-300" 
                                     title="删除记录">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
                             </button>
-                            <button class="rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-emerald-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-emerald-300 cursor-pointer group-hover:text-gray-300" 
-                                    onclick="parent.app.artifactList.loadWorkflow('${artifact.id}')"
+                            <button class="load-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-emerald-300 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-emerald-300 cursor-pointer group-hover:text-gray-300" 
                                     title="加载工作流">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -304,8 +305,35 @@ export class ArtifactList {
                         </div>
                     </div>
                 </div>
-            </div>
         `;
+
+        // 绑定事件监听
+        const viewBtn = card.querySelector('.view-btn');
+        const downloadBtn = card.querySelector('.download-btn');
+        const deleteBtn = card.querySelector('.delete-btn');
+        const loadBtn = card.querySelector('.load-btn');
+
+        viewBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.viewDetails(artifact);
+        });
+
+        downloadBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.downloadImage(imageUrl);
+        });
+
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.deleteArtifact(artifact);
+        });
+
+        loadBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.loadWorkflow(artifact);
+        });
+
+        return card;
     }
 
     getStatusClass(status) {
@@ -360,9 +388,9 @@ export class ArtifactList {
         return '';
     }
 
-    async viewDetails(id) {
+    async viewDetails(artifact) {
         try {
-            const response = await fetch(`/bt/artifacts/${id}`);
+            const response = await fetch(`/bt/artifacts/${artifact.id}`);
             if (!response.ok) throw new Error('获取详情失败');
             
             const result = await response.json();
@@ -370,7 +398,7 @@ export class ArtifactList {
                 throw new Error(result.msg || '获取详情失败');
             }
             
-            app.ui.dialog.show(`生成详情 #${id}`, {
+            app.ui.dialog.show(`生成详情 #${artifact.id}`, {
                 element: this.createDetailsView(result.data),
                 class: "artifact-details-dialog"
             });
@@ -428,13 +456,13 @@ export class ArtifactList {
         }
     }
 
-    async deleteArtifact(id) {
+    async deleteArtifact(artifact) {
         if (!confirm('确定要删除这条记录吗？')) {
             return;
         }
         
         try {
-            const response = await fetch(`/bt/artifacts/${id}`, {
+            const response = await fetch(`/bt/artifacts/${artifact.id}`, {
                 method: 'DELETE'
             });
             
@@ -446,7 +474,7 @@ export class ArtifactList {
             }
             
             // 从界面上移除该元素
-            const card = this.frame.contentDocument.querySelector(`[data-id="${id}"]`);
+            const card = this.frame.contentDocument.querySelector(`[data-id="${artifact.id}"]`);
             if (card) {
                 card.remove();
             }
@@ -458,23 +486,22 @@ export class ArtifactList {
         }
     }
 
-    async loadWorkflow(id) {
+    async loadWorkflow(artifact) {
         try {
-            const response = await fetch(`/bt/artifacts/${id}/workflow`);
-            if (!response.ok) throw new Error('加载工作流失败');
-            
-            const result = await response.json();
-            if (result.code !== 0) {
-                throw new Error(result.msg || '加载工作流失败');
+            const imageUrl = this.getImageUrl(artifact);
+            if (!artifact.prompt) {
+                throw new Error('找不到对应的生成信息!');
             }
-            
-            // 清除当前画布
-            app.graph.clear();
-            
-            // 加载工作流数据
-            const workflow = result.data;
-            app.loadGraphData(workflow);
-            
+
+            const workflow = artifact.prompt[3].extra_pnginfo.workflow;
+            if(!workflow) {
+                throw new Error('找不到工作流!');
+            }
+            // 从图片加载工作流
+            await app.loadGraphData(JSON.parse(JSON.stringify(workflow)))
+            if (artifact.outputs) {
+                app.nodeOutputs = JSON.parse(JSON.stringify(artifact.outputs))
+            }
             app.ui.showToast('工作流加载成功', 'success');
         } catch (error) {
             console.error('加载工作流失败:', error);
