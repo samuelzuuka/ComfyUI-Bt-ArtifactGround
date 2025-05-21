@@ -17,7 +17,7 @@ class ArtifactDB(BaseDB):
                     status TEXT,         -- 存储状态信息，JSON格式
                     prompt TEXT,         -- 存储提示词数据，JSON格式
                     result_status TEXT DEFAULT '0',  -- 结果状态：0-处理中 1-已完成 2-错误
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    created_at DATETIME
                 )
             ''')
             # 创建prompt_id索引
@@ -42,8 +42,8 @@ class ArtifactDB(BaseDB):
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO comfyui_bt_artifact (prompt_id, meta, outputs, status, prompt, result_status)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO comfyui_bt_artifact (prompt_id, meta, outputs, status, prompt, result_status, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, datetime('now', 'localtime'))
             ''', (
                 prompt_id,
                 json.dumps(meta or {}),
