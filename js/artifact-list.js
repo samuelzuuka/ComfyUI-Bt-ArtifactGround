@@ -19,7 +19,7 @@ export class ArtifactList {
 
 
     showImagePreview(artifact) {
-        const imageUrls = this.getAllImageUrls(artifact);
+        const imageUrls = this.getAllImageUrls(artifact).map(item => item.url);
         this.imagePreview.showPreview(imageUrls);
     }
 
@@ -312,7 +312,7 @@ export class ArtifactList {
     createArtifactCard(artifact) {
         const imageUrls = this.getAllImageUrls(artifact);
         const imageCount = imageUrls.length;
-        const imageUrl = imageUrls[0] || '';
+        const imageUrl = imageUrls[0].url || '';
         const card = document.createElement('div');
         card.className = 'artifact-item group rounded-lg bg-gray-900 p-1.5 hover:bg-gray-800 transition-colors duration-200 dark:bg-gray-900 dark:hover:bg-gray-800';
         card.setAttribute('data-id', artifact.id);
@@ -320,12 +320,12 @@ export class ArtifactList {
         card.innerHTML = `
                 <div class="relative aspect-[4/3] overflow-hidden rounded">
                     <img src="${imageUrl}" 
-                         class="h-full w-full object-cover cursor-zoom-in bt-artifact-preview-trigger" 
+                         class="h-full w-full object-cover cursor-zoom-in bt-artifact-preview-trigger artifact-image" 
                          alt="生成图片" 
                          data-current-index="0"
                          onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22><rect width=%221%22 height=%221%22 fill=%22%23262626%22/></svg>'" />
                     <div class="absolute bottom-2 right-2 bg-black rounded-md w-8 h-8 flex items-center justify-center">
-                        <span class="text-[15px] font-medium text-blue-400">${this.getImageCount(artifact)}</span>
+                        <span class="text-[15px] font-medium text-blue-400">${imageCount}</span>
                     </div>
                     ${imageCount > 1 ? `
                     <div class="absolute top-2 left-2 bg-black rounded-md w-8 h-8 flex items-center justify-center bt-prev-image-btn">
@@ -388,7 +388,7 @@ export class ArtifactList {
 
         // 如果有多张图片，绑定切换事件
         if (imageCount > 1) {
-            const img = card.querySelector('img');
+            const img = card.querySelector('.artifact-image');
             const prevBtn = card.querySelector('.bt-prev-image-btn');
             const nextBtn = card.querySelector('.bt-next-image-btn');
             
@@ -397,7 +397,7 @@ export class ArtifactList {
                 const currentIndex = parseInt(img.dataset.currentIndex);
                 if (currentIndex > 0) {
                     img.dataset.currentIndex = currentIndex - 1;
-                    img.src = imageUrls[currentIndex - 1];
+                    img.src = imageUrls[currentIndex - 1].url;
                 }
             });
             
@@ -406,7 +406,7 @@ export class ArtifactList {
                 const currentIndex = parseInt(img.dataset.currentIndex);
                 if (currentIndex < imageUrls.length - 1) {
                     img.dataset.currentIndex = currentIndex + 1;
-                    img.src = imageUrls[currentIndex + 1];
+                    img.src = imageUrls[currentIndex + 1].url;
                 }
             });
         }
@@ -424,7 +424,10 @@ export class ArtifactList {
 
         downloadBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            this.downloadImage(imageUrl);
+            const img = card.querySelector('.artifact-image');
+            const currentIndex = parseInt(img.dataset.currentIndex);
+            const currentImageInfo = imageUrls[currentIndex];
+            this.downloadImage(currentImageInfo);
         });
 
         deleteBtn.addEventListener('click', (e) => {
@@ -492,15 +495,16 @@ export class ArtifactList {
         return '';
     }
 
-    async downloadImage(url) {
+    async downloadImage(imageInfo) {
         try {
+            const {url,filename} = imageInfo;
             const response = await fetch(url);
             const blob = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
             
             const a = document.createElement('a');
             a.href = blobUrl;
-            a.download = url.split('/').pop() || 'image.png';
+            a.download = filename || 'image.png';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -517,8 +521,14 @@ export class ArtifactList {
         }
         
         try {
-            const response = await fetch(`/bt/artifacts/${artifact.id}`, {
-                method: 'DELETE'
+            const response = await fetch('/bt/artifacts/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: artifact.id
+                })
             });
             
             if (!response.ok) throw new Error('删除失败');
@@ -535,6 +545,9 @@ export class ArtifactList {
             }
             
             app.ui.showToast('删除成功', 'success');
+            
+            // 重新加载当前页面的数据
+            await this.loadArtifacts(this.dateInput.value, this.statusSelect.value);
         } catch (error) {
             console.error('删除记录失败:', error);
             app.ui.showToast('删除记录失败', 'error');
@@ -584,20 +597,6 @@ export class ArtifactList {
         }
     }
 
-    getImageCount(artifact) {
-        let count = 0;
-        const outputs = artifact.outputs || {};
-        
-        for (const nodeId in outputs) {
-            const output = outputs[nodeId];
-            if (output.images) {
-                count += output.images.length;
-            }
-        }
-        
-        return count;
-    }
-
     getAllImageUrls(artifact) {
         const outputs = artifact.outputs || {};
         const urls = [];
@@ -606,9 +605,11 @@ export class ArtifactList {
         for (const nodeId in outputs) {
             const output = outputs[nodeId];
             if (output.images && output.images.length > 0) {
-                output.images.forEach(image => {
+                output.images
+                    .filter(image => image.type === 'output')
+                    .forEach(image => {
                     const url = `/api/view?filename=${image.filename}&type=${image.type}`;
-                    urls.push(url);
+                    urls.push({url:url,filename:image.filename});
                 });
             }
         }

@@ -227,11 +227,11 @@ class ArtifactDB(BaseDB):
                 'created_at': row[7]
             } for row in cursor.fetchall()]
 
-    def delete_artifact(self, artifact_id: int) -> bool:
+    def delete_artifact(self, id: int) -> bool:
         """删除指定的生成记录"""
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("DELETE FROM comfyui_bt_artifact WHERE id = ?", (artifact_id,))
+            cursor.execute("DELETE FROM comfyui_bt_artifact WHERE id = ?", (id,))
             conn.commit()
             return cursor.rowcount > 0
 
