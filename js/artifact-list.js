@@ -7,6 +7,9 @@ export class ArtifactList {
         this.container.style.height = '100%';
         this.container.style.display = 'flex';
         this.container.style.flexDirection = 'column';
+        this.pageSize = 5;
+        this.currentPage = 1;
+        this.total = 0;
         this.init();
     }
 
@@ -93,6 +96,24 @@ export class ArtifactList {
                         display: inline-block;
                         vertical-align: middle;
                     }
+
+                    /* 分页按钮样式 */
+                    .pagination-btn {
+                        min-width: 32px;
+                        height: 32px;
+                        padding: 0 6px;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        border-radius: 6px;
+                        font-size: 14px;
+                        transition: all 0.2s;
+                    }
+
+                    .pagination-btn:disabled {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+                    }
                 </style>
             </head>
             <body class="dark bg-black text-gray-100 h-full">
@@ -125,6 +146,26 @@ export class ArtifactList {
                             <!-- 图片项将在这里动态生成 -->
                         </div>
                     </div>
+
+                    <!-- 分页区域 -->
+                    <div class="flex-none mt-2 py-2 flex items-center justify-between border-t border-gray-800">
+                        <div class="text-sm text-gray-500">
+                            共 <span id="totalCount">0</span> 条
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button id="prevPage" class="pagination-btn bg-gray-900 text-gray-400 hover:bg-gray-800 hover:text-gray-300 active:bg-gray-700 disabled:hover:bg-gray-900 disabled:hover:text-gray-400" disabled>
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <span class="text-sm text-gray-400">第 <span id="currentPage">1</span> 页</span>
+                            <button id="nextPage" class="pagination-btn bg-gray-900 text-gray-400 hover:bg-gray-800 hover:text-gray-300 active:bg-gray-700 disabled:hover:bg-gray-900 disabled:hover:text-gray-400" disabled>
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </body>
             </html>
@@ -136,6 +177,10 @@ export class ArtifactList {
         this.dateInput = doc.querySelector('input[type="date"]');
         this.statusSelect = doc.querySelector('select');
         this.artifactList = doc.querySelector('#artifactList > div');
+        this.totalCountEl = doc.querySelector('#totalCount');
+        this.currentPageEl = doc.querySelector('#currentPage');
+        this.prevPageBtn = doc.querySelector('#prevPage');
+        this.nextPageBtn = doc.querySelector('#nextPage');
 
         this.bindEvents();
         this.loadArtifacts();
@@ -152,34 +197,38 @@ export class ArtifactList {
             });
         }
 
-        // 日期和状态选择事件
+        // 分页按钮事件
+        if (this.prevPageBtn) {
+            this.prevPageBtn.addEventListener('click', () => {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                    this.loadArtifacts(this.dateInput.value, this.statusSelect.value);
+                }
+            });
+        }
+
+        if (this.nextPageBtn) {
+            this.nextPageBtn.addEventListener('click', () => {
+                const totalPages = Math.ceil(this.total / this.pageSize);
+                if (this.currentPage < totalPages) {
+                    this.currentPage++;
+                    this.loadArtifacts(this.dateInput.value, this.statusSelect.value);
+                }
+            });
+        }
+
+        // 修改日期和状态选择的事件处理
         if (this.dateInput) {
             this.dateInput.addEventListener('change', () => {
+                this.currentPage = 1;
                 this.loadArtifacts(this.dateInput.value, this.statusSelect.value);
             });
         }
 
         if (this.statusSelect) {
             this.statusSelect.addEventListener('change', () => {
+                this.currentPage = 1;
                 this.loadArtifacts(this.dateInput.value, this.statusSelect.value);
-            });
-        }
-
-        // 滚动加载
-        const listContainer = this.artifactList?.parentElement;
-        if (listContainer) {
-            let isLoading = false;
-            let offset = 0;
-            const limit = 20;
-
-            listContainer.addEventListener('scroll', async (e) => {
-                const { scrollTop, scrollHeight, clientHeight } = e.target;
-                if (scrollHeight - scrollTop - clientHeight < 50 && !isLoading) {
-                    isLoading = true;
-                    offset += limit;
-                    await this.loadMoreArtifacts(offset);
-                    isLoading = false;
-                }
             });
         }
     }
@@ -194,53 +243,37 @@ export class ArtifactList {
                 body: JSON.stringify({
                     date,
                     status,
-                    limit: 20,
-                    offset: 0
+                    limit: this.pageSize,
+                    offset: (this.currentPage - 1) * this.pageSize
                 })
             });
-            
-            if (!response.ok) throw new Error('加载失败');
-            
-            const result = await response.json();
-            if (result.code !== 0) {
-                throw new Error(result.msg || '加载失败');
-            }
-            
-            this.renderArtifacts(result.data, true);
-        } catch (error) {
-            console.error('加载历史记录失败:', error);
-            app.ui.showToast('加载历史记录失败', 'error');
-        }
-    }
 
-    async loadMoreArtifacts(offset) {
-        try {
-            const response = await fetch('/bt/artifacts/list', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    date: this.dateInput.value,
-                    status: this.statusSelect.value,
-                    limit: 20,
-                    offset
-                })
-            });
-            
-            if (!response.ok) throw new Error('加载失败');
-            
-            const result = await response.json();
-            if (result.code !== 0) {
-                throw new Error(result.msg || '加载失败');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+
+            const result = await response.json();
             
-            if (result.data.length > 0) {
-                this.renderArtifacts(result.data, false);
+            if (result.code === 0) {
+                const { list, total } = result.data;
+                this.total = total;
+                this.artifacts = list;
+                this.renderArtifacts(list);
+                this.renderPagination();
+            } else {
+                console.error('加载失败:', result.msg);
+                throw new Error(result.msg);
             }
         } catch (error) {
-            console.error('加载更多记录失败:', error);
-            app.ui.showToast('加载更多记录失败', 'error');
+            console.error('请求失败:', error);
+            const doc = this.frame.contentDocument;
+            if (doc) {
+                this.artifactList.innerHTML = `
+                    <div class="text-gray-500 dark:text-gray-400 text-center py-8">
+                        加载失败: ${error.message}
+                    </div>
+                `;
+            }
         }
     }
 
@@ -506,6 +539,22 @@ export class ArtifactList {
         } catch (error) {
             console.error('加载工作流失败:', error);
             app.ui.showToast('加载工作流失败', 'error');
+        }
+    }
+
+    renderPagination() {
+        if (this.totalCountEl) {
+            this.totalCountEl.textContent = ` ${this.total} `;
+        }
+        if (this.currentPageEl) {
+            this.currentPageEl.textContent = ` ${this.currentPage} `;
+        }
+        if (this.prevPageBtn) {
+            this.prevPageBtn.disabled = this.currentPage <= 1;
+        }
+        if (this.nextPageBtn) {
+            const totalPages = Math.ceil(this.total / this.pageSize);
+            this.nextPageBtn.disabled = this.currentPage >= totalPages;
         }
     }
 } 

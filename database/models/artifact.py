@@ -233,4 +233,41 @@ class ArtifactDB(BaseDB):
             cursor = conn.cursor()
             cursor.execute("DELETE FROM comfyui_bt_artifact WHERE id = ?", (artifact_id,))
             conn.commit()
-            return cursor.rowcount > 0 
+            return cursor.rowcount > 0
+
+    def count_artifacts(self, date: str = '', status: str = '') -> int:
+        """统计记录总数
+        
+        Args:
+            date: 日期过滤，格式为YYYY-MM-DD
+            status: 状态过滤
+            
+        Returns:
+            记录总数
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        # 构建查询条件
+        conditions = []
+        params = []
+        
+        if date:
+            conditions.append("date(created_at) = ?")
+            params.append(date)
+            
+        if status:
+            conditions.append("status = ?") 
+            params.append(status)
+            
+        # 拼接SQL
+        sql = "SELECT COUNT(*) FROM comfyui_bt_artifact"
+        if conditions:
+            sql += " WHERE " + " AND ".join(conditions)
+            
+        # 执行查询    
+        cursor.execute(sql, params)
+        count = cursor.fetchone()[0]
+        
+        conn.close()
+        return count 

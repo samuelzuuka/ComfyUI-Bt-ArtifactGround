@@ -24,10 +24,18 @@ async def handle_artifacts_list(request: web.Request):
             status=status
         )
         
+        # 获取总数
+        total = db_manager.artifact.count_artifacts(date=date, status=status)
+        
         return web.json_response({
             'code': 0,
             'msg': 'success',
-            'data': artifacts
+            'data': {
+                'list': artifacts,
+                'total': total,
+                'page': offset // limit + 1,
+                'pageSize': limit
+            }
         })
     except Exception as e:
         logging.error(f"获取历史记录失败: {str(e)}")
@@ -37,29 +45,29 @@ async def handle_artifacts_list(request: web.Request):
             'data': None
         })
 
-@routes.get('/bt/artifacts/{id}')
-async def handle_artifact_detail(request: web.Request):
-    """处理单条记录详情请求"""
-    try:
-        artifact_id = request.match_info['id']
-        artifact = db_manager.artifact.get_artifact(artifact_id)
+# @routes.get('/bt/artifacts/{id}')
+# async def handle_artifact_detail(request: web.Request):
+#     """处理单条记录详情请求"""
+#     try:
+#         artifact_id = request.match_info['id']
+#         artifact = db_manager.artifact.get_artifact(artifact_id)
         
-        if not artifact:
-            return web.json_response({
-                'code': 404,
-                'msg': '记录不存在',
-                'data': None
-            })
+#         if not artifact:
+#             return web.json_response({
+#                 'code': 404,
+#                 'msg': '记录不存在',
+#                 'data': None
+#             })
             
-        return web.json_response({
-            'code': 0,
-            'msg': 'success',
-            'data': artifact
-        })
-    except Exception as e:
-        logging.error(f"获取记录详情失败: {str(e)}")
-        return web.json_response({
-            'code': 500,
-            'msg': str(e),
-            'data': None
-        }) 
+#         return web.json_response({
+#             'code': 0,
+#             'msg': 'success',
+#             'data': artifact
+#         })
+#     except Exception as e:
+#         logging.error(f"获取记录详情失败: {str(e)}")
+#         return web.json_response({
+#             'code': 500,
+#             'msg': str(e),
+#             'data': None
+#         }) 
