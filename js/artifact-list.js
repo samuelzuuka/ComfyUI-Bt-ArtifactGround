@@ -10,7 +10,198 @@ export class ArtifactList {
         this.pageSize = 5;
         this.currentPage = 1;
         this.total = 0;
+
+        // 创建预览组件
+        this.createPreviewOverlay();
         this.init();
+    }
+
+    createPreviewOverlay() {
+        // 检查是否已存在预览组件
+        const existingOverlay = document.querySelector('#bt-image-preview-overlay');
+        if (existingOverlay) {
+            this.previewOverlay = existingOverlay;
+            return;
+        }
+
+        // 创建样式
+        const style = document.createElement('style');
+        style.textContent = `
+            #bt-image-preview-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.9);
+                z-index: 10000;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                cursor: zoom-out;
+            }
+
+            #bt-image-preview-overlay.active {
+                display: flex;
+            }
+
+            .bt-image-preview-container {
+                position: relative;
+                max-width: 90vw;
+                max-height: 90vh;
+            }
+
+            .bt-image-preview-container img {
+                max-width: 100%;
+                max-height: 90vh;
+                object-fit: contain;
+            }
+
+            .bt-image-preview-close {
+                position: absolute;
+                top: -40px;
+                right: 0;
+                color: white;
+                cursor: pointer;
+                padding: 8px;
+                font-size: 28px;
+                background: rgba(0, 0, 0, 0.5);
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .bt-image-preview-nav {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                color: white;
+                cursor: pointer;
+                font-size: 28px;
+                background: rgba(0, 0, 0, 0.5);
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .bt-image-preview-prev {
+                left: -60px;
+            }
+
+            .bt-image-preview-next {
+                right: -60px;
+            }
+
+            .bt-image-preview-counter {
+                position: absolute;
+                bottom: -30px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: white;
+                font-size: 14px;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 创建预览组件
+        const overlay = document.createElement('div');
+        overlay.id = 'bt-image-preview-overlay';
+        overlay.innerHTML = `
+            <div class="bt-image-preview-container">
+                <div class="bt-image-preview-close">&times;</div>
+                <img src="" alt="预览图片" />
+                <div class="bt-image-preview-nav bt-image-preview-prev">&lt;</div>
+                <div class="bt-image-preview-nav bt-image-preview-next">&gt;</div>
+                <div class="bt-image-preview-counter"></div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        this.previewOverlay = overlay;
+    }
+
+    showImagePreview(artifact) {
+        const overlay = this.previewOverlay;
+        const previewImg = overlay.querySelector('img');
+        const closeBtn = overlay.querySelector('.bt-image-preview-close');
+        const prevBtn = overlay.querySelector('.bt-image-preview-prev');
+        const nextBtn = overlay.querySelector('.bt-image-preview-next');
+        const counter = overlay.querySelector('.bt-image-preview-counter');
+
+        // 获取当前图片的所有URL
+        const imageUrls = this.getAllImageUrls(artifact);
+        let currentIndex = 0;
+
+        const updatePreviewImage = () => {
+            previewImg.src = imageUrls[currentIndex];
+            // 更新导航按钮状态
+            prevBtn.style.display = currentIndex > 0 ? 'flex' : 'none';
+            nextBtn.style.display = currentIndex < imageUrls.length - 1 ? 'flex' : 'none';
+            // 更新计数器
+            counter.textContent = `${currentIndex + 1} / ${imageUrls.length}`;
+        };
+
+        // 初始化预览图片
+        updatePreviewImage();
+
+        // 显示预览
+        overlay.classList.add('active');
+
+        // 绑定关闭事件
+        const closePreview = () => {
+            overlay.classList.remove('active');
+        };
+
+        closeBtn.onclick = closePreview;
+        overlay.onclick = (e) => {
+            if (e.target === overlay) {
+                closePreview();
+            }
+        };
+
+        // 绑定键盘事件
+        const handleKeydown = (e) => {
+            if (e.key === 'Escape') {
+                closePreview();
+            } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                currentIndex--;
+                updatePreviewImage();
+            } else if (e.key === 'ArrowRight' && currentIndex < imageUrls.length - 1) {
+                currentIndex++;
+                updatePreviewImage();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeydown);
+
+        // 绑定导航按钮事件
+        prevBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (currentIndex > 0) {
+                currentIndex--;
+                updatePreviewImage();
+            }
+        };
+
+        nextBtn.onclick = (e) => {
+            e.stopPropagation();
+            if (currentIndex < imageUrls.length - 1) {
+                currentIndex++;
+                updatePreviewImage();
+            }
+        };
+
+        // 清理事件监听
+        overlay.addEventListener('transitionend', () => {
+            if (!overlay.classList.contains('active')) {
+                document.removeEventListener('keydown', handleKeydown);
+            }
+        });
     }
 
     init() {
@@ -298,9 +489,14 @@ export class ArtifactList {
         card.innerHTML = `
                 <div class="relative aspect-[4/3] overflow-hidden rounded">
                     <img src="${imageUrl}" 
-                         class="h-full w-full object-cover" 
+                         class="h-full w-full object-cover cursor-zoom-in bt-artifact-preview-trigger" 
                          alt="生成图片" 
                          onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22><rect width=%221%22 height=%221%22 fill=%22%23262626%22/></svg>'" />
+                    ${this.getImageCount(artifact) > 1 ? `
+                    <div class="absolute bottom-2 right-2 bg-black rounded-md w-8 h-8 flex items-center justify-center">
+                        <span class="text-[15px] font-medium text-blue-400">${this.getImageCount(artifact)}</span>
+                    </div>
+                    ` : ''}
                 </div>
                 <div class="mt-1.5">
                     <div class="flex items-center justify-between">
@@ -311,13 +507,13 @@ export class ArtifactList {
                             <span class="text-[11px] text-gray-500 dark:text-gray-400">${this.formatDate(artifact.created_at)}</span>
                         </div>
                         <div class="flex gap-0.5">
-                            <button class="view-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 active:bg-gray-700 active:scale-95 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300 transition-all" 
+                            <!--<button class="view-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 active:bg-gray-700 active:scale-95 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300 transition-all" 
                                     title="查看详情">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
-                            </button>
+                            </button>-->
                             <button class="download-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 active:bg-gray-700 active:scale-95 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300 transition-all" 
                                     title="下载图片">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -341,16 +537,23 @@ export class ArtifactList {
                 </div>
         `;
 
+        // 使用业务性的class绑定点击事件
+        const previewTrigger = card.querySelector('.bt-artifact-preview-trigger');
+        previewTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.showImagePreview(artifact);
+        });
+
         // 绑定事件监听
-        const viewBtn = card.querySelector('.view-btn');
+        // const viewBtn = card.querySelector('.view-btn');
         const downloadBtn = card.querySelector('.download-btn');
         const deleteBtn = card.querySelector('.delete-btn');
         const loadBtn = card.querySelector('.load-btn');
 
-        viewBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.viewDetails(artifact);
-        });
+        // viewBtn.addEventListener('click', (e) => {
+        //     e.stopPropagation();
+        //     this.viewDetails(artifact);
+        // });
 
         downloadBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -420,26 +623,6 @@ export class ArtifactList {
             return imageMap['temp'][0];
         }
         return '';
-    }
-
-    async viewDetails(artifact) {
-        try {
-            const response = await fetch(`/bt/artifacts/${artifact.id}`);
-            if (!response.ok) throw new Error('获取详情失败');
-            
-            const result = await response.json();
-            if (result.code !== 0) {
-                throw new Error(result.msg || '获取详情失败');
-            }
-            
-            app.ui.dialog.show(`生成详情 #${artifact.id}`, {
-                element: this.createDetailsView(result.data),
-                class: "artifact-details-dialog"
-            });
-        } catch (error) {
-            console.error('获取详情失败:', error);
-            app.ui.showToast('获取详情失败', 'error');
-        }
     }
 
     createDetailsView(artifact) {
@@ -561,5 +744,37 @@ export class ArtifactList {
         if (this.nextPageBtn) {
             this.nextPageBtn.disabled = this.currentPage >= totalPages;
         }
+    }
+
+    getImageCount(artifact) {
+        let count = 0;
+        const outputs = artifact.outputs || {};
+        
+        for (const nodeId in outputs) {
+            const output = outputs[nodeId];
+            if (output.images) {
+                count += output.images.length;
+            }
+        }
+        
+        return count;
+    }
+
+    getAllImageUrls(artifact) {
+        const outputs = artifact.outputs || {};
+        const urls = [];
+        
+        // 首先添加输出图片
+        for (const nodeId in outputs) {
+            const output = outputs[nodeId];
+            if (output.images && output.images.length > 0) {
+                output.images.forEach(image => {
+                    const url = `/api/view?filename=${image.filename}&type=${image.type}`;
+                    urls.push(url);
+                });
+            }
+        }
+        
+        return urls;
     }
 } 
