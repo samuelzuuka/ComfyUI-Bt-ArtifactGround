@@ -127,12 +127,10 @@ export class ArtifactList {
                     }
 
                     .artifact-item .bt-prev-image-btn{
-                        top: calc(50% - var(--spacing) * 4);
-                        left: calc(var(--spacing) * 2);
+                        top: calc(50% - var(--spacing) * 3);
                     }
                     .artifact-item .bt-next-image-btn {
-                        top: calc(50% - var(--spacing) * 4);
-                        right: calc(var(--spacing) * 2);
+                        top: calc(50% - var(--spacing) * 3);
                     }
                 </style>
             </head>
@@ -320,20 +318,23 @@ export class ArtifactList {
         card.innerHTML = `
                 <div class="relative aspect-[4/3] overflow-hidden rounded">
                     <img src="${imageUrl}" 
-                         class="h-full w-full object-cover cursor-zoom-in bt-artifact-preview-trigger artifact-image" 
+                         class="h-full w-full object-cover cursor-zoom-in bt-artifact-preview-trigger artifact-image transition-opacity duration-300" 
                          alt="生成图片" 
                          data-current-index="0"
                          onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22><rect width=%221%22 height=%221%22 fill=%22%23262626%22/></svg>'" />
                     <div class="absolute bottom-2 right-2 bg-black rounded-md w-8 h-8 flex items-center justify-center">
                         <span class="text-[15px] font-medium text-blue-400">${imageCount}</span>
                     </div>
+                    <div class="absolute bottom-2 left-2 bg-black/50 rounded-md px-2 h-6 flex items-center justify-center">
+                        <span class="text-[11px] text-gray-300">${this.formatDate(artifact.created_at)}</span>
+                    </div>
                     ${imageCount > 1 ? `
-                    <div class="absolute top-2 left-2 bg-black rounded-md w-8 h-8 flex items-center justify-center bt-prev-image-btn">
+                    <div class="absolute top-2 left-2 bg-black/50 hover:bg-black rounded-md w-6 h-6 flex items-center justify-center bt-prev-image-btn opacity-50 hover:opacity-100 transition-all">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                         </svg>
                     </div>
-                    <div class="absolute top-2 right-2 bg-black rounded-md w-8 h-8 flex items-center justify-center bt-next-image-btn">
+                    <div class="absolute top-2 right-2 bg-black/50 hover:bg-black rounded-md w-6 h-6 flex items-center justify-center bt-next-image-btn opacity-50 hover:opacity-100 transition-all">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
@@ -346,16 +347,8 @@ export class ArtifactList {
                             <span class="inline-flex items-center rounded-full px-1.5 py-0.5 text-[11px] font-medium ${this.getStatusClass(artifact.result_status)}">
                                 ${this.getStatusText(artifact.result_status)}
                             </span>
-                            <span class="text-[11px] text-gray-500 dark:text-gray-400">${this.formatDate(artifact.created_at)}</span>
                         </div>
                         <div class="flex gap-0.5">
-                            <!--<button class="view-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 active:bg-gray-700 active:scale-95 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300 transition-all" 
-                                    title="查看详情">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                            </button>-->
                             <button class="download-btn rounded p-1 text-gray-500 hover:bg-gray-800 hover:text-gray-300 active:bg-gray-700 active:scale-95 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 cursor-pointer group-hover:text-gray-300 transition-all" 
                                     title="下载图片">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -396,8 +389,12 @@ export class ArtifactList {
                 e.stopPropagation();
                 const currentIndex = parseInt(img.dataset.currentIndex);
                 if (currentIndex > 0) {
-                    img.dataset.currentIndex = currentIndex - 1;
-                    img.src = imageUrls[currentIndex - 1].url;
+                    img.style.opacity = '0';
+                    setTimeout(() => {
+                        img.dataset.currentIndex = currentIndex - 1;
+                        img.src = imageUrls[currentIndex - 1].url;
+                        img.style.opacity = '1';
+                    }, 150);
                 }
             });
             
@@ -405,8 +402,12 @@ export class ArtifactList {
                 e.stopPropagation();
                 const currentIndex = parseInt(img.dataset.currentIndex);
                 if (currentIndex < imageUrls.length - 1) {
-                    img.dataset.currentIndex = currentIndex + 1;
-                    img.src = imageUrls[currentIndex + 1].url;
+                    img.style.opacity = '0';
+                    setTimeout(() => {
+                        img.dataset.currentIndex = currentIndex + 1;
+                        img.src = imageUrls[currentIndex + 1].url;
+                        img.style.opacity = '1';
+                    }, 150);
                 }
             });
         }

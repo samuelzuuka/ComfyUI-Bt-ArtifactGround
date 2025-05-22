@@ -1,18 +1,12 @@
-from .nodes.save_node import SaveArtifactNode
-from .nodes.query_node import QueryArtifactsNode
-from .nodes.delete_node import DeleteArtifactNode
+from .nodes.upload_node import UploadImageNode
 from .btmiddleware import *
 
 NODE_CLASS_MAPPINGS = {
-    "SaveArtifact": SaveArtifactNode,
-    "QueryArtifacts": QueryArtifactsNode,
-    "DeleteArtifact": DeleteArtifactNode,
+    "UploadImage": UploadImageNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "SaveArtifact": "保存生成记录",
-    "QueryArtifacts": "查询生成记录",
-    "DeleteArtifact": "删除生成记录",
+    "UploadImage": "上传图片到服务器",
 }
 
 WEB_DIRECTORY = "./js"
