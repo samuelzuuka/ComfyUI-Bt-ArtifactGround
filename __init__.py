@@ -1,12 +1,12 @@
-from .nodes.upload_node import UploadImageNode
+from .nodes.upload_node import BtUploadImageNode
 from .btmiddleware import *
 
 NODE_CLASS_MAPPINGS = {
-    "UploadImage": UploadImageNode,
+    "BtUploadImageNode": BtUploadImageNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "UploadImage": "上传图片到服务器",
+    "BtUploadImageNode": "上传图片到服务器",
 }
 
 WEB_DIRECTORY = "./js"

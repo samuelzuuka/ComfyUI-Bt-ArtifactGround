@@ -92,9 +92,9 @@ async def handle_pre_request(request: web.Request):
             "url": str(request.url),
             "path": request.path,
         }
-        logging.info(f"请求信息: {json.dumps(request_info, ensure_ascii=False)}")
 
         if request.path == '/api/prompt' and request.method == 'POST':
+            logging.info(f"请求信息: {json.dumps(request_info, ensure_ascii=False)}")
             data = await request.json()
             logging.info(f"请求参数: {json.dumps(data, ensure_ascii=False)}")
 
@@ -115,11 +115,11 @@ async def handle_post_response(request: web.Request, response: web.Response):
             else:
                 logging.error(f"生成任务失败...{json.dumps(body, ensure_ascii=False)}")
 
-        if isinstance(response, web.Response):
-            response_info = {
-                "status": response.status,
-            }
-            logging.info(f"响应信息: {json.dumps(response_info, ensure_ascii=False, indent=2)}")
+        # if isinstance(response, web.Response):
+        #     response_info = {
+        #         "status": response.status,
+        #     }
+        #     logging.info(f"响应信息: {json.dumps(response_info, ensure_ascii=False, indent=2)}")
     except Exception as e:
         logging.error(f"响应后处理异常: {str(e)}")
 
