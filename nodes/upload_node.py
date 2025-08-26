@@ -38,6 +38,7 @@ class BtUploadImageNode:
             "required": {
                 "images": ("IMAGE",),
                 "filename_prefix": ("STRING", {"default": "upload"}),
+                "material_category": ("STRING", {"default": "默认分类"}),
             },
             # 隐藏的内置参数
             "hidden": {
@@ -58,7 +59,7 @@ class BtUploadImageNode:
     # CATEGORY = "image"
 
     @classmethod
-    def IS_CHANGED(self, images, filename_prefix):
+    def IS_CHANGED(self, images, filename_prefix, material_category):
         # 返回一个随机字符串，永远不会被缓存
         return str(uuid.uuid4())
 
@@ -67,7 +68,7 @@ class BtUploadImageNode:
         all_settings = user_settings.get_settings(req)
         return all_settings.get(key,default)
     
-    async def upload_image(self, file_path, settings):
+    async def upload_image(self, file_path, settings, material_category="默认分类"):
         """异步上传单个文件"""
         try:
             # 构建完整的文件路径
@@ -87,6 +88,7 @@ class BtUploadImageNode:
                          file_data,
                          filename=filename,
                          content_type='image/png')
+            data.add_field('material_category', material_category)
 
             # 设置请求头
             headers = {
@@ -148,7 +150,7 @@ class BtUploadImageNode:
             logging.error(f"错误信息: {str(e)}")
             return False, f"文件处理错误: {str(e)}"
 
-    async def do_upload_images(self, saved_paths, settings):
+    async def do_upload_images(self, saved_paths, settings, material_category="默认分类"):
         """异步上传多个文件"""
         logging.info(f"开始批量上传 {len(saved_paths)} 个文件")
         logging.info(f"并发数: {settings['concurrent']}")
@@ -166,10 +168,10 @@ class BtUploadImageNode:
                         return False, result
                     
                     # 提交 OSS URL 到后台
-                    return await self.submit_oss_url(result, os.path.basename(path), settings)
+                    return await self.submit_oss_url(result, os.path.basename(path), settings, material_category)
                 else:
                     # HTTP 直接上传
-                    return await self.upload_image(path, settings)
+                    return await self.upload_image(path, settings, material_category)
         
         # 并发上传所有文件
         tasks = [upload_with_semaphore(path) for path in saved_paths]
@@ -207,7 +209,7 @@ class BtUploadImageNode:
             "error_files": error_files
         }
 
-    def upload_images(self, images, filename_prefix, prompt:dict, extra_pnginfo:dict, unique_id:str):
+    def upload_images(self, images, filename_prefix, material_category, prompt:dict, extra_pnginfo:dict, unique_id:str):
         try:
             logging.info(f"images: {type(images)}")
             # 获取所有配置
@@ -305,7 +307,7 @@ class BtUploadImageNode:
                     asyncio.set_event_loop(loop)
 
                 try:
-                    upload_results = loop.run_until_complete(self.do_upload_images(saved_paths, settings))
+                    upload_results = loop.run_until_complete(self.do_upload_images(saved_paths, settings, material_category))
                     
                     # 构建返回消息
                     result = {
@@ -345,7 +347,7 @@ class BtUploadImageNode:
                 asyncio.set_event_loop(loop)
 
             try:
-                upload_results = loop.run_until_complete(self.do_upload_images(saved_paths, settings))
+                upload_results = loop.run_until_complete(self.do_upload_images(saved_paths, settings, material_category))
                 
                 # 构建返回消息
                 result = {
@@ -459,13 +461,14 @@ class BtUploadImageNode:
             command_ui_alert(f"OSS 上传失败: 文件={file_path}")
             return False, str(e)
 
-    async def submit_oss_url(self, url, filename, settings):
+    async def submit_oss_url(self, url, filename, settings, material_category="默认分类"):
         """将 OSS URL 提交到后台"""
         try:
             # 准备请求数据
             data = aiohttp.FormData()
             data.add_field('oss_url', url)
             data.add_field('filename', filename)
+            data.add_field('material_category', material_category)
             
             # 设置请求头
             headers = {
