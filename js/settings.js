@@ -4,14 +4,6 @@ app.registerExtension({
     name: "BtArtifactGround.Settings",
     async setup() {
         const settings = [
-            // {
-            //     id: "BtArtifactGround.server.enabled",
-            //     name: "启用上传服务",
-            //     type: "boolean",
-            //     defaultValue: true,
-            //     category: ["BtArtifactGround", "服务器配置", "是否启用图片上传"],
-            //     tooltip: "是否启用图片上传服务"
-            // },
             {
                 id: "BtArtifactGround.server.url",
                 name: "服务器地址",
