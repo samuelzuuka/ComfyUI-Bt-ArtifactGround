@@ -68,6 +68,29 @@ class BtUploadImageNode:
         all_settings = user_settings.get_settings(req)
         return all_settings.get(key,default)
     
+    def _run_async_upload(self, saved_paths, settings, material_category):
+        """安全地运行异步上传任务"""
+        try:
+            # 尝试获取当前事件循环
+            loop = asyncio.get_running_loop()
+            # 如果已经有运行中的事件循环，使用 asyncio.create_task
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(self._run_in_new_loop, saved_paths, settings, material_category)
+                return future.result()
+        except RuntimeError:
+            # 没有运行中的事件循环，创建新的
+            return self._run_in_new_loop(saved_paths, settings, material_category)
+    
+    def _run_in_new_loop(self, saved_paths, settings, material_category):
+        """在新的事件循环中运行异步任务"""
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            return loop.run_until_complete(self.do_upload_images(saved_paths, settings, material_category))
+        finally:
+            loop.close()
+    
     async def upload_image(self, file_path, settings, material_category="默认分类"):
         """异步上传单个文件"""
         try:
@@ -300,40 +323,27 @@ class BtUploadImageNode:
             # 执行阿里云OSS上传
             try:
                 # 执行上传
-                try:
-                    loop = asyncio.get_event_loop()
-                except RuntimeError:
-                    loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-
-                try:
-                    upload_results = loop.run_until_complete(self.do_upload_images(saved_paths, settings, material_category))
-                    
-                    # 构建返回消息
-                    result = {
-                        "message": f"上传完成: 成功{upload_results['success']}个, 失败{upload_results['failed']}个",
-                        "success": upload_results['success'],
-                        "failed": upload_results['failed'],
-                        "paths": saved_paths
-                    }
-                    
-                    if upload_results['success_files']:
-                        result["success_files"] = upload_results['success_files']
-                    
-                    if upload_results['error_files']:
-                        result["error_files"] = upload_results['error_files']
-                    
-                    save_urls = []
-                    for success_file in upload_results['success_files']:
-                        save_urls.append(success_file['url'])
-                    
-                    return (json.dumps(result, ensure_ascii=False), "\n".join(save_urls))
-                    
-                except Exception as e:
-                    return (json.dumps({
-                        "message": f"上传过程出错: {str(e)}",
-                        "paths": saved_paths
-                    }, ensure_ascii=False), "")
+                upload_results = self._run_async_upload(saved_paths, settings, material_category)
+                
+                # 构建返回消息
+                result = {
+                    "message": f"上传完成: 成功{upload_results['success']}个, 失败{upload_results['failed']}个",
+                    "success": upload_results['success'],
+                    "failed": upload_results['failed'],
+                    "paths": saved_paths
+                }
+                
+                if upload_results['success_files']:
+                    result["success_files"] = upload_results['success_files']
+                
+                if upload_results['error_files']:
+                    result["error_files"] = upload_results['error_files']
+                
+                save_urls = []
+                for success_file in upload_results['success_files']:
+                    save_urls.append(success_file['url'])
+                
+                return (json.dumps(result, ensure_ascii=False), "\n".join(save_urls))
                     
             except ImportError:
                 logging.error("未安装 oss2 模块，无法使用OSS上传")
@@ -341,13 +351,7 @@ class BtUploadImageNode:
         else:
             # 执行HTTP上传
             try:
-                loop = asyncio.get_event_loop()
-            except RuntimeError:
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-
-            try:
-                upload_results = loop.run_until_complete(self.do_upload_images(saved_paths, settings, material_category))
+                upload_results = self._run_async_upload(saved_paths, settings, material_category)
                 
                 # 构建返回消息
                 result = {
