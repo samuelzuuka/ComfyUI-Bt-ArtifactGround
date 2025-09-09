@@ -130,9 +130,7 @@ async def process_request(request, handler):
         response.headers.setdefault('Cache-Control', 'no-cache')
     return response
 
-def query_prompt_history_byid(prompt_id):
-    """查询prompt_id对应的prompt"""
-    return prompt_server.prompt_queue.get_history(prompt_id=prompt_id)
+
 
 @web.middleware
 async def record_queue_req(request: web.Request, handler):
@@ -181,3 +179,21 @@ async def handle_artifacts_list(request: web.Request):
 
 # 注册路由
 app.router.add_get('/bt/artifacts/list', handle_artifacts_list)
+
+
+
+def query_prompt_history_byid(prompt_id):
+    """查询prompt_id对应的prompt"""
+    return prompt_server.prompt_queue.get_history(prompt_id=prompt_id)
+
+async def handle_query_prompt_history_byid(request: web.Request):
+    """处理查询prompt_id对应的prompt请求"""
+    try:
+        prompt_id = request.query.get('prompt_id', '')
+        return web.json_response(query_prompt_history_byid(prompt_id))
+    except Exception as e:
+        logging.error(f"查询prompt_id对应的prompt失败: {str(e)}")
+        return web.json_response({"error": str(e)}, status=500)
+
+
+app.router.add_get('/bt/api/prompt/query-byid', handle_query_prompt_history_byid)
