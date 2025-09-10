@@ -184,7 +184,28 @@ app.router.add_get('/bt/artifacts/list', handle_artifacts_list)
 
 def query_prompt_history_byid(prompt_id):
     """查询prompt_id对应的prompt"""
-    return prompt_server.prompt_queue.get_history(prompt_id=prompt_id)
+    prompt_item = prompt_server.prompt_queue.get_history(prompt_id=prompt_id)
+
+    # 转换下格式，返回给前端易于处理
+    if not prompt_item or not prompt_item.__contains__(prompt_id):
+        return {
+            'prompt_id': prompt_id,
+            'outputs': {},
+            'finish_flag': False,
+            # 'meta': {},
+            'status': {
+                'completed': False,
+                'status_str': 'processing'
+            }
+        }
+    else:
+        return {
+            'prompt_id': prompt_id,
+            'outputs': prompt_item[prompt_id]['outputs'] or {},
+            # 'meta': prompt_item[prompt_id]['meta'] or {},
+            'finish_flag': prompt_item[prompt_id]['status']['completed'],
+            'status': prompt_item[prompt_id]['status']
+        }
 
 async def handle_query_prompt_history_byid(request: web.Request):
     """处理查询prompt_id对应的prompt请求"""
