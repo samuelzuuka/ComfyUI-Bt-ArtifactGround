@@ -29,7 +29,9 @@ class FakeRequest:
             self.headers = headers
 
 
-class BtJimengT2IV31Node:
+class BtJimengT2IBaseNode:
+    REQ_KEY = "jimeng_t2i_v31"
+
     def __init__(self):
         self.base_url = "https://visual.volcengineapi.com"
 
@@ -169,7 +171,7 @@ class BtJimengT2IV31Node:
 
     async def _submit_task(self, prompt, width, height, seed, use_pre_llm, settings):
         body = {
-            "req_key": "jimeng_t2i_v31",
+            "req_key": self.REQ_KEY,
             "prompt": prompt,
             "seed": seed,
         }
@@ -191,7 +193,7 @@ class BtJimengT2IV31Node:
 
     async def _query_task(self, task_id, settings, req_json=None):
         body = {
-            "req_key": "jimeng_t2i_v31",
+            "req_key": self.REQ_KEY,
             "task_id": task_id,
         }
         if req_json:
@@ -303,3 +305,15 @@ class BtJimengT2IV31Node:
                 return (torch.zeros((1, 64, 64, 3)), "任务超时未完成")
 
             time.sleep(poll_interval_ms / 1000.0)
+
+
+class BtJimengT2IV31Node(BtJimengT2IBaseNode):
+    REQ_KEY = "jimeng_t2i_v31"
+
+
+class BtJimengT2IV30Node(BtJimengT2IBaseNode):
+    REQ_KEY = "jimeng_t2i_v30"
+
+
+class BtJimengT2IV40Node(BtJimengT2IBaseNode):
+    REQ_KEY = "jimeng_t2i_v40"
