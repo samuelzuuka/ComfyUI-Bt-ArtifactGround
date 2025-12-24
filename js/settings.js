@@ -141,6 +141,63 @@ app.registerExtension({
                     showButtons: true
                 },
                 tooltip: "同时上传的最大文件数"
+            },
+            {
+                id: "BtArtifactGround.volc.endpoint",
+                name: "火山引擎接口地址",
+                type: "text",
+                defaultValue: "https://visual.volcengineapi.com",
+                category: ["BtArtifactGround", "火山引擎", "接口地址"],
+                tooltip: "即梦文生图3.1的接口地址"
+            },
+            {
+                id: "BtArtifactGround.volc.accessKeyId",
+                name: "火山引擎 AccessKeyId",
+                type: "text",
+                defaultValue: "",
+                category: ["BtArtifactGround", "火山引擎", "AccessKeyId"],
+                tooltip: "火山引擎AccessKeyId"
+            },
+            {
+                id: "BtArtifactGround.volc.secretAccessKey",
+                name: "火山引擎 SecretAccessKey",
+                type: "text",
+                defaultValue: "",
+                category: ["BtArtifactGround", "火山引擎", "SecretAccessKey"],
+                attrs: {
+                    type: "password"
+                },
+                tooltip: "火山引擎SecretAccessKey"
+            },
+            {
+                id: "BtArtifactGround.volc.region",
+                name: "火山引擎 Region",
+                type: "text",
+                defaultValue: "cn-north-1",
+                category: ["BtArtifactGround", "火山引擎", "Region"],
+                tooltip: "签名Region，默认cn-north-1"
+            },
+            {
+                id: "BtArtifactGround.volc.service",
+                name: "火山引擎 Service",
+                type: "text",
+                defaultValue: "cv",
+                category: ["BtArtifactGround", "火山引擎", "Service"],
+                tooltip: "签名Service，默认cv"
+            },
+            {
+                id: "BtArtifactGround.volc.timeout",
+                name: "火山引擎超时(毫秒)",
+                type: "number",
+                defaultValue: 30000,
+                category: ["BtArtifactGround", "火山引擎", "超时"],
+                attrs: {
+                    min: 1000,
+                    max: 300000,
+                    step: 1000,
+                    showButtons: true
+                },
+                tooltip: "火山引擎接口请求超时时间"
             }
         ];
 

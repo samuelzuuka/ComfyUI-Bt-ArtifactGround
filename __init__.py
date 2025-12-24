@@ -1,4 +1,5 @@
 from .nodes.upload_node import BtUploadImageNode
+from .nodes.jimeng_t2i_v31_node import BtJimengT2IV31Node
 from .btmiddleware import *
 
 # 检查并安装依赖
@@ -14,10 +15,12 @@ from .btmiddleware import *
 
 NODE_CLASS_MAPPINGS = {
     "BtUploadImageNode": BtUploadImageNode,
+    "BtJimengT2IV31Node": BtJimengT2IV31Node,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "BtUploadImageNode": "上传图片到服务器",
+    "BtJimengT2IV31Node": "即梦文生图3.1",
 }
 
 WEB_DIRECTORY = "./js"
