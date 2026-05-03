@@ -1,0 +1,590 @@
+{
+    "checkpointId": 21627436,
+    "promptMagic": 1,
+    "generateType": 65,
+    "source": 0,
+    "bizType": 22,
+    "taskQueuePriority": 1,
+    "originalPrompt": "女性手部特写，修手指，美甲款式为:深棕透色长梯形甲+金色大理石纹理甲面(带细碎闪粉)，搭配同色系宽松浅棕衬衫;背景简洁浅白，散落少量棕黄色枯叶，柔和自然光，高清细腻质感，商业美甲展示风格",
+    "referenceList": [],
+    "additionalNetwork": [],
+    "vae": "",
+    "frontCustomerReq": {
+        "overallStore": {
+            "__version": 1,
+            "__initialized": false,
+            "__keepTracking": true,
+            "__transaction": false,
+            "editingImageId": null,
+            "promptExpandMode": "",
+            "selectedImage": null,
+            "generatorData": {
+                "prompt": "女性手部特写，修手指，美甲款式为:深棕透色长梯形甲+金色大理石纹理甲面(带细碎闪粉)，搭配同色系宽松浅棕衬衫;背景简洁浅白，散落少量棕黄色枯叶，柔和自然光，高清细腻质感，商业美甲展示风格",
+                "count": 1,
+                "width": 1728,
+                "height": 2304,
+                "taskQueuePriority": 1,
+                "scale": "3:4",
+                "baseType": 30,
+                "checkpointId": 21627436,
+                "modelCoverUrl": "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/4096a952d43f31a23c88cd4bace9f3eccf30c946e18a2c5ea05891d14fb2ea04.png",
+                "modelName": "Seedream 4.0"
+            },
+            "imageReference": null,
+            "segments": null,
+            "referenceList": [],
+            "additionalNetwork": [],
+            "templateList": [],
+            "imageStyleList": [],
+            "supportModelList": [
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/4096a952d43f31a23c88cd4bace9f3eccf30c946e18a2c5ea05891d14fb2ea04.png",
+                    "name": "Seedream 4.5",
+                    "description": "多角色超强一致性，支持多图融合，语义遵循精准",
+                    "labels": [
+                        "超清4K",
+                        "组图模式",
+                        "多参考图"
+                    ],
+                    "recommend": 0,
+                    "order": 10,
+                    "baseType": 55,
+                    "checkpointId": "22188573",
+                    "width": 216,
+                    "height": 323,
+                    "cornerLabels": [
+                        "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/51c538af976a08576b54e482fc498fb28d5d064663be4b0a7d72a15edc1061c0.png"
+                    ],
+                    "baseConfig": "{\"enableSetReferenceDimension\":false,\"referenceImageCount\":14,\"supportStyleType\":\"template\",\"supportStyleCount\":0,\"mutualExclusionStyle\":[],\"icon\":\"\",\"referenceDimensionConfig\":{}}",
+                    "enableSetReferenceDimension": false,
+                    "referenceImageCount": 14,
+                    "supportStyleType": "template",
+                    "supportStyleCount": 0,
+                    "mutualExclusionStyle": [],
+                    "icon": "",
+                    "referenceDimensionConfig": {}
+                },
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/4096a952d43f31a23c88cd4bace9f3eccf30c946e18a2c5ea05891d14fb2ea04.png",
+                    "name": "Seedream 4.0",
+                    "description": "极速高质出图，支持中文文字与海报设计",
+                    "labels": [
+                        "超清4K",
+                        "组图模式",
+                        "多参考图"
+                    ],
+                    "recommend": 0,
+                    "order": 10,
+                    "baseType": 30,
+                    "checkpointId": "21627436",
+                    "width": 216,
+                    "height": 323,
+                    "cornerLabels": null,
+                    "baseConfig": "{\"enableSetReferenceDimension\":false,\"referenceImageCount\":6,\"supportStyleType\":\"none\",\"supportStyleCount\":0,\"mutualExclusionStyle\":[],\"icon\":\"\",\"referenceDimensionConfig\":{}}",
+                    "enableSetReferenceDimension": false,
+                    "referenceImageCount": 6,
+                    "supportStyleType": "none",
+                    "supportStyleCount": 0,
+                    "mutualExclusionStyle": [],
+                    "icon": "",
+                    "referenceDimensionConfig": {}
+                },
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/bb85957c75cb50fdda304cd1d332a8effde1f4e6ab7902cd975cd40d672bf493.png",
+                    "name": "Qwen-Image",
+                    "description": "文生图能力强，图片排版能力佳",
+                    "labels": [
+                        "设置参考维度",
+                        "多参考图",
+                        "风格模型"
+                    ],
+                    "recommend": 0,
+                    "order": 11,
+                    "baseType": 37,
+                    "checkpointId": "21304658",
+                    "width": 216,
+                    "height": 323,
+                    "cornerLabels": null,
+                    "baseConfig": "{\"enableSetReferenceDimension\":true,\"referenceImageCount\":2,\"supportStyleType\":\"lora\",\"supportStyleCount\":3,\"mutualExclusionStyle\":[],\"icon\":\"\",\"referenceDimensionConfig\":{\"image\":{\"count\":1},\"entityControl\":{\"count\":0},\"IPAdapter\":{\"count\":1},\"faceId\":{\"count\":0},\"outline\":{\"count\":1},\"depth\":{\"count\":1},\"pose\":{\"count\":1},\"inpaint\":{\"count\":1}}}",
+                    "enableSetReferenceDimension": true,
+                    "referenceImageCount": 2,
+                    "supportStyleType": "lora",
+                    "supportStyleCount": 3,
+                    "mutualExclusionStyle": [],
+                    "icon": "",
+                    "referenceDimensionConfig": {
+                        "image": {
+                            "count": 1
+                        },
+                        "entityControl": {
+                            "count": 0
+                        },
+                        "IPAdapter": {
+                            "count": 1
+                        },
+                        "faceId": {
+                            "count": 0
+                        },
+                        "outline": {
+                            "count": 1
+                        },
+                        "depth": {
+                            "count": 1
+                        },
+                        "pose": {
+                            "count": 1
+                        },
+                        "inpaint": {
+                            "count": 1
+                        }
+                    }
+                },
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/b98941f475e44ec08d49a5e1491bc12a/a790fc4a8725e5313ba48243aec184556b981ef0a89953f9941339b34043ae07.png",
+                    "name": "全能图片模型V2",
+                    "description": "最强的一致性，准确的语义理解",
+                    "labels": [
+                        "超清 4K",
+                        "多参考图",
+                        "指令编辑强"
+                    ],
+                    "recommend": 0,
+                    "order": 13,
+                    "baseType": 40,
+                    "checkpointId": "22111377",
+                    "width": 216,
+                    "height": 323,
+                    "cornerLabels": [
+                        "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/51c538af976a08576b54e482fc498fb28d5d064663be4b0a7d72a15edc1061c0.png"
+                    ],
+                    "baseConfig": "{\"enableSetReferenceDimension\":false,\"referenceImageCount\":14,\"supportStyleType\":\"template\",\"supportStyleCount\":0,\"mutualExclusionStyle\":[],\"icon\":\"\",\"referenceDimensionConfig\":{}}",
+                    "enableSetReferenceDimension": false,
+                    "referenceImageCount": 14,
+                    "supportStyleType": "template",
+                    "supportStyleCount": 0,
+                    "mutualExclusionStyle": [],
+                    "icon": "",
+                    "referenceDimensionConfig": {}
+                },
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/9241b5301f5d61e7a4bdef7d11977bd1e212feff2b4e0bdbbfe5d0839de70dd6.png",
+                    "name": "基础算法F.2 Pro",
+                    "description": "新一代图片生成与编辑",
+                    "labels": [
+                        "图像编辑",
+                        "2K"
+                    ],
+                    "recommend": 0,
+                    "order": 12,
+                    "baseType": 50,
+                    "checkpointId": "22143785",
+                    "width": 420,
+                    "height": 583,
+                    "cornerLabels": [
+                        "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/51c538af976a08576b54e482fc498fb28d5d064663be4b0a7d72a15edc1061c0.png"
+                    ],
+                    "baseConfig": "{\"enableSetReferenceDimension\":false,\"referenceImageCount\":8,\"supportStyleType\":\"none\",\"supportStyleCount\":0,\"mutualExclusionStyle\":[],\"icon\":\"\",\"referenceDimensionConfig\":{}}",
+                    "enableSetReferenceDimension": false,
+                    "referenceImageCount": 8,
+                    "supportStyleType": "none",
+                    "supportStyleCount": 0,
+                    "mutualExclusionStyle": [],
+                    "icon": "",
+                    "referenceDimensionConfig": {}
+                },
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/b98941f475e44ec08d49a5e1491bc12a/6ecbf366a2203d3f2699ac241f6b3c231048a20e7342188e03e82cfb8dce91fb.png",
+                    "name": "Z-image Turbo",
+                    "description": "极速生成，适合真实感图片",
+                    "labels": [],
+                    "recommend": 0,
+                    "order": 12,
+                    "baseType": 53,
+                    "checkpointId": "22149465",
+                    "width": 420,
+                    "height": 583,
+                    "cornerLabels": [
+                        "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/51c538af976a08576b54e482fc498fb28d5d064663be4b0a7d72a15edc1061c0.png"
+                    ],
+                    "baseConfig": "{\"enableSetReferenceDimension\":false,\"referenceImageCount\":1,\"supportStyleType\":\"lora\",\"supportStyleCount\":3,\"mutualExclusionStyle\":[],\"icon\":\"\",\"referenceDimensionConfig\":{}}",
+                    "enableSetReferenceDimension": false,
+                    "referenceImageCount": 1,
+                    "supportStyleType": "lora",
+                    "supportStyleCount": 3,
+                    "mutualExclusionStyle": [],
+                    "icon": "",
+                    "referenceDimensionConfig": {}
+                },
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/9241b5301f5d61e7a4bdef7d11977bd1e212feff2b4e0bdbbfe5d0839de70dd6.png",
+                    "name": "基础算法 F.2 Flex",
+                    "description": "新一代支持排版的图片生成与编辑",
+                    "labels": [
+                        "图像编辑",
+                        "2K"
+                    ],
+                    "recommend": 0,
+                    "order": 12,
+                    "baseType": 51,
+                    "checkpointId": "22143794",
+                    "width": 420,
+                    "height": 583,
+                    "cornerLabels": [
+                        "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/51c538af976a08576b54e482fc498fb28d5d064663be4b0a7d72a15edc1061c0.png"
+                    ],
+                    "baseConfig": "{\"enableSetReferenceDimension\":false,\"referenceImageCount\":10,\"supportStyleType\":\"none\",\"supportStyleCount\":0,\"mutualExclusionStyle\":[],\"icon\":\"\",\"referenceDimensionConfig\":{}}",
+                    "enableSetReferenceDimension": false,
+                    "referenceImageCount": 10,
+                    "supportStyleType": "none",
+                    "supportStyleCount": 0,
+                    "mutualExclusionStyle": [],
+                    "icon": "",
+                    "referenceDimensionConfig": {}
+                },
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/b98941f475e44ec08d49a5e1491bc12a/a790fc4a8725e5313ba48243aec184556b981ef0a89953f9941339b34043ae07.png",
+                    "name": "全能图片模型",
+                    "description": "支持多图编辑，能力强大全面",
+                    "labels": [
+                        "多参考图",
+                        "指令编辑强"
+                    ],
+                    "recommend": 0,
+                    "order": 13,
+                    "baseType": 40,
+                    "checkpointId": "21522459",
+                    "width": 216,
+                    "height": 323,
+                    "cornerLabels": null,
+                    "baseConfig": "{\"enableSetReferenceDimension\":false,\"referenceImageCount\":10,\"supportStyleType\":\"templat\",\"supportStyleCount\":0,\"mutualExclusionStyle\":[],\"icon\":\"\",\"referenceDimensionConfig\":{}}",
+                    "enableSetReferenceDimension": false,
+                    "referenceImageCount": 10,
+                    "supportStyleType": "templat",
+                    "supportStyleCount": 0,
+                    "mutualExclusionStyle": [],
+                    "icon": "",
+                    "referenceDimensionConfig": {}
+                },
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/99c86a37c03f0444dd7d39242de373953373b28216720f9cb2ed7d8094d67991.png",
+                    "name": "基础模型F.1",
+                    "description": "经典生图模型，风格多样范围广",
+                    "labels": [
+                        "设置参考维度",
+                        "多参考图",
+                        "风格模型"
+                    ],
+                    "recommend": 0,
+                    "order": 12,
+                    "baseType": 19,
+                    "checkpointId": "2295774",
+                    "width": 420,
+                    "height": 583,
+                    "cornerLabels": null,
+                    "baseConfig": "{\"enableSetReferenceDimension\":true,\"referenceImageCount\":3,\"supportStyleType\":\"lora\",\"supportStyleCount\":3,\"mutualExclusionStyle\":[{\"keys\":[\"entityControl\",\"image\"],\"tips\":\"主体参考与整体参考无法叠加设置\"}],\"icon\":\"\",\"referenceDimensionConfig\":{\"image\":{\"count\":1},\"entityControl\":{\"count\":1},\"IPAdapter\":{\"count\":1},\"faceId\":{\"count\":1},\"outline\":{\"count\":1},\"depth\":{\"count\":1},\"pose\":{\"count\":1},\"inpaint\":{\"count\":1}}}",
+                    "enableSetReferenceDimension": true,
+                    "referenceImageCount": 3,
+                    "supportStyleType": "lora",
+                    "supportStyleCount": 3,
+                    "mutualExclusionStyle": [
+                        {
+                            "keys": [
+                                "entityControl",
+                                "image"
+                            ],
+                            "tips": "主体参考与整体参考无法叠加设置"
+                        }
+                    ],
+                    "icon": "",
+                    "referenceDimensionConfig": {
+                        "image": {
+                            "count": 1
+                        },
+                        "entityControl": {
+                            "count": 1
+                        },
+                        "IPAdapter": {
+                            "count": 1
+                        },
+                        "faceId": {
+                            "count": 1
+                        },
+                        "outline": {
+                            "count": 1
+                        },
+                        "depth": {
+                            "count": 1
+                        },
+                        "pose": {
+                            "count": 1
+                        },
+                        "inpaint": {
+                            "count": 1
+                        }
+                    }
+                },
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/b452266e79c349a3a3ee94b5f5f9d8e1/fd62a7563e09660960990884245100584b48cacbcf7c469bebb5e4c884923667.png",
+                    "name": "混元图像3.0",
+                    "description": "语义理解准确，更细腻的质感",
+                    "labels": [
+                        "文生图"
+                    ],
+                    "recommend": 0,
+                    "order": 10,
+                    "baseType": 24,
+                    "checkpointId": "21985968",
+                    "width": 216,
+                    "height": 323,
+                    "cornerLabels": null,
+                    "baseConfig": "{\"enableSetReferenceDimension\":false,\"referenceImageCount\":0,\"supportStyleType\":\"none\",\"supportStyleCount\":0,\"mutualExclusionStyle\":[],\"icon\":\"\",\"referenceDimensionConfig\":{}}",
+                    "enableSetReferenceDimension": false,
+                    "referenceImageCount": 0,
+                    "supportStyleType": "none",
+                    "supportStyleCount": 0,
+                    "mutualExclusionStyle": [],
+                    "icon": "",
+                    "referenceDimensionConfig": {}
+                },
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/9dab561cda0b84cdce368240a3e886182f26eed5fd82b1ee4ebd8d662cd75797.png",
+                    "name": "悠船 V7",
+                    "description": "极致美学，创意能力强",
+                    "labels": [
+                        "设置参考维度",
+                        "多参考图"
+                    ],
+                    "recommend": 0,
+                    "order": 14,
+                    "baseType": 42,
+                    "checkpointId": "21811215",
+                    "width": 216,
+                    "height": 323,
+                    "cornerLabels": null,
+                    "baseConfig": "{\"enableSetReferenceDimension\":true,\"referenceImageCount\":6,\"supportStyleType\":\"none\",\"supportStyleCount\":0,\"mutualExclusionStyle\":[],\"icon\":\"\",\"referenceDimensionConfig\":{\"image\":{\"count\":20},\"entityControl\":{\"count\":20},\"IPAdapter\":{\"count\":20},\"faceId\":{\"count\":0},\"outline\":{\"count\":0},\"depth\":{\"count\":0},\"pose\":{\"count\":0},\"inpaint\":{\"count\":0}}}",
+                    "enableSetReferenceDimension": true,
+                    "referenceImageCount": 6,
+                    "supportStyleType": "none",
+                    "supportStyleCount": 0,
+                    "mutualExclusionStyle": [],
+                    "icon": "",
+                    "referenceDimensionConfig": {
+                        "image": {
+                            "count": 20
+                        },
+                        "entityControl": {
+                            "count": 20
+                        },
+                        "IPAdapter": {
+                            "count": 20
+                        },
+                        "faceId": {
+                            "count": 0
+                        },
+                        "outline": {
+                            "count": 0
+                        },
+                        "depth": {
+                            "count": 0
+                        },
+                        "pose": {
+                            "count": 0
+                        },
+                        "inpaint": {
+                            "count": 0
+                        }
+                    }
+                },
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/b98941f475e44ec08d49a5e1491bc12a/a58f5ee33969fc1a2d240bb6a46f3ae261ea4beb54b37407ce73ef402c4c8722.png",
+                    "name": "图片编辑模型",
+                    "description": "快速编辑，局部精准改图",
+                    "labels": [
+                        "设置参考维度",
+                        "指令编辑强",
+                        "风格模型"
+                    ],
+                    "recommend": 0,
+                    "order": 16,
+                    "baseType": 31,
+                    "checkpointId": "20902402",
+                    "width": 496,
+                    "height": 256,
+                    "cornerLabels": null,
+                    "baseConfig": "{\"enableSetReferenceDimension\":true,\"referenceImageCount\":3,\"supportStyleType\":\"lora\",\"supportStyleCount\":3,\"mutualExclusionStyle\":[],\"icon\":\"\",\"referenceDimensionConfig\":{\"image\":{\"count\":1},\"entityControl\":{\"count\":1},\"IPAdapter\":{\"count\":1},\"faceId\":{\"count\":1},\"outline\":{\"count\":1},\"depth\":{\"count\":1},\"pose\":{\"count\":1},\"inpaint\":{\"count\":1}}}",
+                    "enableSetReferenceDimension": true,
+                    "referenceImageCount": 3,
+                    "supportStyleType": "lora",
+                    "supportStyleCount": 3,
+                    "mutualExclusionStyle": [],
+                    "icon": "",
+                    "referenceDimensionConfig": {
+                        "image": {
+                            "count": 1
+                        },
+                        "entityControl": {
+                            "count": 1
+                        },
+                        "IPAdapter": {
+                            "count": 1
+                        },
+                        "faceId": {
+                            "count": 1
+                        },
+                        "outline": {
+                            "count": 1
+                        },
+                        "depth": {
+                            "count": 1
+                        },
+                        "pose": {
+                            "count": 1
+                        },
+                        "inpaint": {
+                            "count": 1
+                        }
+                    }
+                },
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/b98941f475e44ec08d49a5e1491bc12a/a58f5ee33969fc1a2d240bb6a46f3ae261ea4beb54b37407ce73ef402c4c8722.png",
+                    "name": "图片编辑Pro",
+                    "description": "快速编辑，局部精准改图",
+                    "labels": [
+                        "多参考图",
+                        "指令编辑强"
+                    ],
+                    "recommend": 0,
+                    "order": 17,
+                    "baseType": 31,
+                    "checkpointId": "20638482",
+                    "width": 496,
+                    "height": 256,
+                    "cornerLabels": null,
+                    "baseConfig": "{\"enableSetReferenceDimension\":false,\"referenceImageCount\":4,\"supportStyleType\":\"none\",\"supportStyleCount\":0,\"mutualExclusionStyle\":[],\"icon\":\"\",\"referenceDimensionConfig\":{}}",
+                    "enableSetReferenceDimension": false,
+                    "referenceImageCount": 4,
+                    "supportStyleType": "none",
+                    "supportStyleCount": 0,
+                    "mutualExclusionStyle": [],
+                    "icon": "",
+                    "referenceDimensionConfig": {}
+                },
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/bb85957c75cb50fdda304cd1d332a8effde1f4e6ab7902cd975cd40d672bf493.png",
+                    "name": "Qwen-Edit",
+                    "description": "文字改图，精细可控",
+                    "labels": [
+                        "多参考图",
+                        "风格模型"
+                    ],
+                    "recommend": 0,
+                    "order": 15,
+                    "baseType": 39,
+                    "checkpointId": "21438011",
+                    "width": 216,
+                    "height": 323,
+                    "cornerLabels": null,
+                    "baseConfig": "{\"enableSetReferenceDimension\":false,\"referenceImageCount\":3,\"supportStyleType\":\"lora\",\"supportStyleCount\":3,\"mutualExclusionStyle\":[],\"icon\":\"\",\"placeholder\":\"输入图片生成的提示词，例如：浩瀚的银河中一艘宇宙飞船驶过\",\"referenceDimensionConfig\":{}}",
+                    "enableSetReferenceDimension": false,
+                    "referenceImageCount": 3,
+                    "supportStyleType": "lora",
+                    "supportStyleCount": 3,
+                    "mutualExclusionStyle": [],
+                    "icon": "",
+                    "placeholder": "输入图片生成的提示词，例如：浩瀚的银河中一艘宇宙飞船驶过",
+                    "referenceDimensionConfig": {}
+                },
+                {
+                    "imageUrl": "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/4096a952d43f31a23c88cd4bace9f3eccf30c946e18a2c5ea05891d14fb2ea04.png",
+                    "name": "Seedream3.0",
+                    "description": "速度快，质量稳定，排版佳",
+                    "labels": [
+                        "设置参考维度",
+                        "风格多样"
+                    ],
+                    "recommend": 0,
+                    "order": 19,
+                    "baseType": 30,
+                    "checkpointId": "20523320",
+                    "width": 216,
+                    "height": 323,
+                    "cornerLabels": null,
+                    "baseConfig": "{\"enableSetReferenceDimension\":true,\"referenceImageCount\":1,\"supportStyleType\":\"style\",\"supportStyleCount\":1,\"mutualExclusionStyle\":[],\"icon\":\"\",\"referenceDimensionConfig\":{\"image\":{\"count\":1},\"entityControl\":{\"count\":1},\"IPAdapter\":{\"count\":1},\"faceId\":{\"count\":1},\"outline\":{\"count\":1},\"depth\":{\"count\":1},\"pose\":{\"count\":1},\"inpaint\":{\"count\":1}}}",
+                    "enableSetReferenceDimension": true,
+                    "referenceImageCount": 1,
+                    "supportStyleType": "style",
+                    "supportStyleCount": 1,
+                    "mutualExclusionStyle": [],
+                    "icon": "",
+                    "referenceDimensionConfig": {
+                        "image": {
+                            "count": 1
+                        },
+                        "entityControl": {
+                            "count": 1
+                        },
+                        "IPAdapter": {
+                            "count": 1
+                        },
+                        "faceId": {
+                            "count": 1
+                        },
+                        "outline": {
+                            "count": 1
+                        },
+                        "depth": {
+                            "count": 1
+                        },
+                        "pose": {
+                            "count": 1
+                        },
+                        "inpaint": {
+                            "count": 1
+                        }
+                    }
+                }
+            ],
+            "generalImages": [],
+            "specialParams": {
+                "seedreamMode": "disabled",
+                "quality": "2",
+                "promptOptimizeMode": "standard",
+                "chaos": 30,
+                "stylize": 100,
+                "raw": false,
+                "iw": 1,
+                "multiple": 1
+            },
+            "toolImageMode": "",
+            "modelConfig": {
+                "imageUrl": "https://liblibai-online.liblib.cloud/img/3f619dd6979545acaae15065bfdc2de4/4096a952d43f31a23c88cd4bace9f3eccf30c946e18a2c5ea05891d14fb2ea04.png",
+                "name": "Seedream 4.0",
+                "description": "极速高质出图，支持中文文字与海报设计",
+                "labels": [
+                    "超清4K",
+                    "组图模式",
+                    "多参考图"
+                ],
+                "recommend": 0,
+                "order": 10,
+                "baseType": 30,
+                "checkpointId": "21627436",
+                "width": 216,
+                "height": 323,
+                "cornerLabels": null,
+                "baseConfig": "{\"enableSetReferenceDimension\":false,\"referenceImageCount\":6,\"supportStyleType\":\"none\",\"supportStyleCount\":0,\"mutualExclusionStyle\":[],\"icon\":\"\",\"referenceDimensionConfig\":{}}",
+                "enableSetReferenceDimension": false,
+                "referenceImageCount": 6,
+                "supportStyleType": "none",
+                "supportStyleCount": 0,
+                "mutualExclusionStyle": [],
+                "icon": "",
+                "referenceDimensionConfig": {}
+            },
+            "promptMagicInit": true,
+            "effects": []
+        }
+    },
+    "prompt": "",
+    "geniusPayload": "{\"model\":\"doubao-seedream-4-0-250828\",\"prompt\":\"女性手部特写，修手指，美甲款式为:深棕透色长梯形甲+金色大理石纹理甲面(带细碎闪粉)，搭配同色系宽松浅棕衬衫;背景简洁浅白，散落少量棕黄色枯叶，柔和自然光，高清细腻质感，商业美甲展示风格\",\"n\":1,\"width\":1728,\"height\":2304,\"size\":\"1728x2304\",\"sequential_image_generation\":\"disabled\",\"promptOptimizeMode\":\"standard\",\"quality\":\"2\",\"images\":[],\"effects\":[]}"
+}
