@@ -145,8 +145,10 @@ async def record_queue_req(request: web.Request, handler):
         await handle_post_response(request, response)
         
         return response
+    except web.HTTPException:
+        raise
     except Exception as e:
-        logging.error(f"中间件处理异常: {str(e)}")
+        logging.error(f"[Bt-ArtifactGround] 中间件处理异常: {str(e)}")
         raise
 
 app.middlewares.append(record_queue_req)
